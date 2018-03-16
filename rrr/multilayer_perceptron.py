@@ -2,8 +2,8 @@ import autograd.numpy as np
 import autograd.numpy.random as npr
 from autograd.scipy.misc import logsumexp
 from autograd import grad, elementwise_grad
-from autograd.util import flatten
-from autograd.optimizers import adam
+from autograd.misc import flatten
+from autograd.misc.optimizers import adam
 from local_linear_explanation import LocalLinearExplanation
 
 # Adapted from https://github.com/HIPS/autograd/blob/master/examples/neural_net.py
