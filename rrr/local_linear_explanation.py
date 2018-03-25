@@ -1,4 +1,4 @@
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 def listwrap(l):
@@ -96,7 +96,7 @@ def explanation_grid(explanations, imgshape, length=None, gridshape=None, pad=0.
   for i in range(xlength):
     for j in range(ylength):
       pass
-      # explanations[n].imshow(imgshape, xoff=i*(1+pad), yoff=(ylength-j-1)*(1+pad), **kwargs)
+      explanations[n].imshow(imgshape, xoff=i*(1+pad), yoff=(ylength-j-1)*(1+pad), **kwargs)
       n += 1
 
 def image_grid(images, imgshape, length=None, **kwargs):
