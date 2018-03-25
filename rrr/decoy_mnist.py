@@ -53,8 +53,9 @@ def augment(image, digit, randomize=False, mult=25, all_digits=range(10)):
   dir2 = fwd if Bern(0.5) else rev
   for i in dir1:
     for j in dir2:
-      img[i][j] = 255 - mult*digit
-      expl[i][j] = 1
+      pass
+      # img[i][j] = 255 - mult*digit
+      # expl[i][j] = 1
 
   return img.ravel(), expl.astype(bool).ravel()
 
