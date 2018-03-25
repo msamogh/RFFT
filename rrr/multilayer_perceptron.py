@@ -106,6 +106,7 @@ class MultilayerPerceptron:
         self,
         inputs,
         targets,
+        golden_indices=None,
         hypotheses=None,
         num_epochs=64,
         batch_size=256,
@@ -114,7 +115,6 @@ class MultilayerPerceptron:
         nonlinearity=relu,
         verbose=False,
         normalize=False,
-        always_include=None,
         callback=None,
         **input_grad_kwargs
     ):
@@ -136,34 +136,64 @@ class MultilayerPerceptron:
             idx = iteration % num_batches
             return slice(idx * batch_size, (idx + 1) * batch_size)
 
+        def right_reasons(
+            Xi,
+            idx,
+            hypotheses,
+            normalize=False,
+            golden_batch_factor=batch_size,
+        ):
+            input_grads = input_gradients(
+                params,
+                **input_grad_kwargs
+            )(Xi)
+
+            A_normal = hypotheses['normal'][idx]
+            A_golden = hypotheses['golden'][idx]
+            if normalize:
+                sum_A_normal = max(1., float(A_normal.sum()))
+                sum_A_golden = max(1., float(A_golden.sum()))
+            A_normal /= sum_A_normal
+            A_golden /= sum_A_golden
+
+            normal_term = (
+                self.l2_grads *
+                1 *
+                l2_norm(input_grads[A_normal])
+            )
+            golden_term = (
+                self.l2_grads *
+                golden_batch_factor *
+                l2_norm(input_grads[A_golden])
+            )
+
+            term = normal_term + golden_term
+            return term
+
+
         def objective(params, iteration):
             idx = batch_indices(iteration)
-            Ai = A[idx]
             Xi = X[idx]
             yi = y[idx]
 
-            if always_include is not None:
-                Ai = np.vstack((A[always_include], Ai))
-                Xi = np.vstack((X[always_include], Xi))
-                yi = np.vstack((y[always_include], yi))
-
             if normalize:
-                sumA = max(1., float(Ai.sum()))
                 lenX = max(1., float(len(Xi)))
             else:
-                sumA = 1.
                 lenX = 1.
 
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
-            rightreasons = self.l2_grads * \
-                l2_norm(input_gradients(
-                    params, **input_grad_kwargs)(Xi)[Ai]) / sumA
+            rightreasons = right_reasons(
+                Xi,
+                idx,
+                hypotheses,
+                normalize=normalize,
+            )
             smallparams = self.l2_params * l2_norm(params)
 
             if verbose and verbose(iteration):
-                print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, sumA={}, lenX={}'.format(
-                    iteration, crossentropy.value, rightreasons.value, smallparams.value, sumA, lenX))
+                print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
+                    iteration, crossentropy.value, rightreasons.value, smallparams.value, lenX))
 
             return crossentropy + rightreasons + smallparams
 
