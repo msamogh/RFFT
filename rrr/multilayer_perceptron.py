@@ -106,7 +106,8 @@ class MultilayerPerceptron:
         self,
         inputs,
         targets,
-        hypotheses=None,
+        hypotheses=[],
+        normalize=False,
         num_epochs=64,
         batch_size=256,
         step_size=0.001,
@@ -120,12 +121,6 @@ class MultilayerPerceptron:
         y = one_hot(targets)
         params = init_random_params(
             0.1, [X.shape[1]] + self.layers + [y.shape[1]], rs=rs)
-
-        if type(verbose) == int:
-            v = verbose
-
-        def verbose(x):
-            return x % v == 0
 
         batch_size = min(batch_size, X.shape[0])
         num_batches = int(np.ceil(X.shape[0] / batch_size))
@@ -147,41 +142,6 @@ class MultilayerPerceptron:
                 lambda hypothesis: hypothesis(idx, input_grads),
                 hypotheses
             ))
-
-        # def right_reasons(
-        #     Xi,
-        #     idx,
-        #     hypotheses,
-        #     normalize=False,
-        #     golden_batch_factor=batch_size,
-        # ):
-        #     input_grads = input_gradients(
-        #         params,
-        #         **input_grad_kwargs
-        #     )(Xi)
-
-        #     A_regular = hypotheses['regular'][idx]
-        #     A_golden = hypotheses['golden'][idx]
-        #     if normalize:
-        #         sum_A_regular = max(1., float(A_regular.sum()))
-        #         sum_A_golden = max(1., float(A_golden.sum()))
-        #     A_regular /= sum_A_regular
-        #     A_golden /= sum_A_golden
-
-        #     normal_term = (
-        #         self.l2_grads *
-        #         1 *
-        #         l2_norm(input_grads[A_regular])
-        #     )
-        #     golden_term = (
-        #         self.l2_grads *
-        #         golden_batch_factor *
-        #         l2_norm(input_grads[A_golden])
-        #     )
-
-        #     term = normal_term + golden_term
-        #     return term
-
 
         def objective(params, iteration):
             idx = batch_indices(iteration)

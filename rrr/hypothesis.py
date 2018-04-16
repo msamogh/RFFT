@@ -6,8 +6,8 @@ class Hypothesis(object):
     def __init__(
         self,
         A,
-        weight=1.0,
         affected_indices=None,
+        weight=1.0,
         normalize=False
     ):
         if affected_indices:
