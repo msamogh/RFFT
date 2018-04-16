@@ -3,13 +3,13 @@ from __future__ import print_function
 
 from PIL import Image
 
-import numpy.random as npr
+import autograd.numpy.random as npr
 
 import os
 import gzip
 import struct
 import array
-import numpy as np
+import autograd.numpy as np
 from urllib.request import urlretrieve
 
 from hypothesis import Hypothesis
@@ -133,17 +133,22 @@ def load_hypothesis(
     )
 
     A = np.zeros_like(x).astype(bool)
+    affected_indices = []
     for filename in xml_files:
         index = int(filename.split('.')[0])
+        affected_indices.append(index)
         A[index] = get_mask(os.path.join(dirname, filename), (28, 28)).flatten()
-    return Hypothesis(
-        A,
-        weight=weight,
-        normalize=normalize
+    return (
+        affected_indices,
+        Hypothesis(
+            A,
+            weight=weight,
+            normalize=normalize
+        )
     )
 
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    # generate_tagging_set(X)
+    generate_tagging_set(X)
     print(load_hypothesis(X))

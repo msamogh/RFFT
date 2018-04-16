@@ -3,25 +3,25 @@ import sys
 sys.path.append('rrr')
 import decoy_mnist
 from multilayer_perceptron import *
-import numpy as np
+import autograd.numpy as np
 import pdb
 import pickle
 
 Xr, X, y, E, Xtr, Xt, yt, Et = decoy_mnist.generate_dataset()
-hypothesis = decoy_mnist.load_hypothesis(X)
-hypothesis.weight = 10000
+indices, hypothesis = decoy_mnist.load_hypothesis(X)
 
 def score_model(mlp):
     print('Train: {0}, Test: {1}'.format(mlp.score(X, y), mlp.score(Xt, yt)))
 
 
 print('Training f0')
+
 f0 = MultilayerPerceptron()
-f0.fit(X, y, hypotheses=[hypothesis], num_epochs=2)
+f0.fit(X, y, hypothesis=hypothesis, num_epochs=8, always_include=indices)
 score_model(f0)
 
 f0 = MultilayerPerceptron()
-f0.fit(X, y, hypotheses=[], num_epochs=2)
+f0.fit(X, y, num_epochs=8, always_include=indices)
 score_model(f0)
 
 for l2 in [1000, 10000, 100000]:
@@ -36,30 +36,30 @@ for l2 in [1000, 10000, 100000]:
 
     print('Training f1')
     M0 = f0.largest_gradient_mask(X)
-    f1.fit(X, y, M0, hypotheses=[hypothesis])
+    f1.fit(X, y, M0, hypothesis=hypothesis)
     score_model(f1)
 
     print('Training f2')
     M1 = f1.largest_gradient_mask(X)
-    f2.fit(X, y, M0 + M1, hypotheses=[hypothesis])
+    f2.fit(X, y, M0 + M1, hypothesis=hypothesis)
     score_model(f2)
 
     print('Training f3')
     M2 = f2.largest_gradient_mask(X)
-    f3.fit(X, y, M0 + M1 + M2, hypotheses=[hypothesis])
+    f3.fit(X, y, M0 + M1 + M2, hypothesis=hypothesis)
     score_model(f3)
 
     # print('Training f4')
     # M3 = f3.largest_gradient_mask(X)
-    # f4.fit(X, y, M0 + M1 + M2 + M3, hypotheses=[hypothesis])
+    # f4.fit(X, y, M0 + M1 + M2 + M3, hypothesis=hypothesis)
 
     # print('Training f5')
     # M4 = f4.largest_gradient_mask(X)
-    # f5.fit(X, y, M0 + M1 + M2 + M3 + M4, hypotheses=[hypothesis])
+    # f5.fit(X, y, M0 + M1 + M2 + M3 + M4, hypothesis=hypothesis)
 
     # print('Training f6')
     # M5 = f5.largest_gradient_mask(X)
-    # f6.fit(X, y, M0 + M1 + M2 + M3 + M4 + M5, hypotheses=[hypothesis])
+    # f6.fit(X, y, M0 + M1 + M2 + M3 + M4 + M5, hypothesis=hypothesis)
 
     params = [f.params for f in [f0, f1, f2, f3, f4, f5, f6]]
     filename = 'data/decoy_mnist_fae_{}'.format(l2)

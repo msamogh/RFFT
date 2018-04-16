@@ -1,6 +1,6 @@
 from xml.etree import ElementTree as elem
 
-import numpy as np
+import autograd.numpy as np
 
 
 def get_mask(bbox_path, image_size, valid_class_names=[]):
@@ -17,7 +17,7 @@ def get_mask(bbox_path, image_size, valid_class_names=[]):
             return int(bbox.find(name).text)
 
         masked_img[
-            get_coord('xmin'):get_coord('xmax'),
-            get_coord('ymin'):get_coord('ymax')
+            get_coord('ymin'):get_coord('ymax'),
+            get_coord('xmin'):get_coord('xmax')
         ] = 0
     return masked_img

@@ -108,7 +108,7 @@ class MultilayerPerceptron:
         self,
         inputs,
         targets,
-        hypotheses=[],
+        hypothesis=None,
         normalize=False,
         num_epochs=64,
         batch_size=256,
@@ -134,20 +134,8 @@ class MultilayerPerceptron:
 
         def batch_indices(iteration):
             idx = iteration % num_batches
-            return  slice(idx * batch_size, (idx + 1) * batch_size)
+            return slice(idx * batch_size, (idx + 1) * batch_size)
 
-        def right_reasons(
-            Xi,
-            idx,
-            always_include,
-            hypotheses
-        ):
-            if always_include is not None:
-                idx = np.vstack()
-            return sum(map(
-                lambda hypothesis: hypothesis(idx, input_grads[idx]),
-                hypotheses
-            ))
 
         def objective(params, iteration):
 
@@ -163,11 +151,16 @@ class MultilayerPerceptron:
             idx = batch_indices(iteration)
             Xi = X[idx]
             yi = y[idx]
+            if hypothesis is not None:
+                A = hypothesis.A
+            else:
+                A = np.zeros_like(inputs).astype(bool)
+            Ai = A[idx]
 
-            # if always_include is not None:
-
-            #     Xi = np.vstack((X[always_include], Xi))
-            #     yi = np.vstack((y[always_include], yi))
+            if always_include is not None:
+                Ai = np.vstack((A[always_include], Ai))
+                Xi = np.vstack((X[always_include], Xi))
+                yi = np.vstack((y[always_include], yi))
 
             if normalize:
                 lenX = max(1., float(len(Xi)))
@@ -176,21 +169,15 @@ class MultilayerPerceptron:
 
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
-            rightreasons = right_reasons(
-                Xi,
-                idx,
-                always_include,
-                hypotheses
-            )
+            rightreasons = self.l2_grads * 100 * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
-            if verbose and verbose(iteration):
+            if iteration % 200 == 0:
                 print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
-                    iteration, crossentropy.value, rightreasons.value, smallparams.value, lenX))
-
+                    iteration, crossentropy, rightreasons, smallparams, lenX))
             return crossentropy + rightreasons + smallparams
 
-        self.params = adam(grad(objective), params, callback=callback,
+        self.params = adam(grad(objective), params,
                            step_size=step_size, num_iters=num_epochs * num_batches)
 
 
