@@ -10,7 +10,7 @@ import gzip
 import struct
 import array
 import numpy as np
-# from urllib.request import urlretrieve
+from urllib.request import urlretrieve
 
 from hypothesis import Hypothesis
 from parse import get_mask
