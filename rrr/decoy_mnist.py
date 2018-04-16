@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 from __future__ import print_function
-from future.standard_library import install_aliases
 
 from PIL import Image
 
@@ -16,7 +15,7 @@ import numpy as np
 from hypothesis import Hypothesis
 from parse import get_mask
 
-install_aliases()
+# install_aliases()
 
 
 def download_mnist(datadir):
