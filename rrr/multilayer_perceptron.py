@@ -4,7 +4,7 @@ from autograd.scipy.misc import logsumexp
 from autograd import grad, elementwise_grad
 from autograd.misc import flatten
 from autograd.misc.optimizers import adam
-from local_linear_explanation import LocalLinearExplanation
+# from local_linear_explanation import LocalLinearExplanation
 
 # Adapted from https://github.com/HIPS/autograd/blob/master/examples/neural_net.py
 # with modifications made such that we have a first-class MLP object
@@ -137,7 +137,7 @@ class MultilayerPerceptron:
             input_grads = input_gradients(
                 params,
                 **input_grad_kwargs
-            )
+            )(inputs)
             return sum(map(
                 lambda hypothesis: hypothesis(idx, input_grads),
                 hypotheses
