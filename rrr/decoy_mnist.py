@@ -122,6 +122,7 @@ def generate_tagging_set(Xtr, size=20):
 
 
 def load_hypothesis(
+    x,
     dirname='tagging/decoy_mnist',
     weight=1.0,
     normalize=False
@@ -131,16 +132,12 @@ def load_hypothesis(
         os.listdir(dirname)
     )
 
-    A = []
-    affected_indices = []
+    A = np.zeros_like(x).astype(bool)
     for filename in xml_files:
-        affected_indices.append(int(filename.split('.')[0]))
-        A.append(
-            get_mask(os.path.join(dirname, filename), (28, 28)).flatten()
-        )
+        index = int(filename.split('.')[0])
+        A[index] = get_mask(os.path.join(dirname, filename), (28, 28)).flatten()
     return Hypothesis(
         A,
-        affected_indices=affected_indices,
         weight=weight,
         normalize=normalize
     )
@@ -148,4 +145,5 @@ def load_hypothesis(
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    generate_tagging_set(Xt)
+    # generate_tagging_set(X)
+    print(load_hypothesis(X))
