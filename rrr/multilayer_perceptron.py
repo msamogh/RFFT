@@ -4,6 +4,8 @@ from autograd.scipy.misc import logsumexp
 from autograd import grad, elementwise_grad
 from autograd.misc import flatten
 from autograd.misc.optimizers import adam
+
+from hypothesis import Hypothesis
 # from local_linear_explanation import LocalLinearExplanation
 
 # Adapted from https://github.com/HIPS/autograd/blob/master/examples/neural_net.py
@@ -112,6 +114,7 @@ class MultilayerPerceptron:
         batch_size=256,
         step_size=0.001,
         rs=npr,
+        always_include=None,
         nonlinearity=relu,
         verbose=False,
         callback=None,
@@ -124,29 +127,47 @@ class MultilayerPerceptron:
 
         batch_size = min(batch_size, X.shape[0])
         num_batches = int(np.ceil(X.shape[0] / batch_size))
+        input_grads = input_gradients(
+            params,
+            **input_grad_kwargs
+        )(inputs)
 
         def batch_indices(iteration):
             idx = iteration % num_batches
-            return slice(idx * batch_size, (idx + 1) * batch_size)
+            return  slice(idx * batch_size, (idx + 1) * batch_size)
 
         def right_reasons(
             Xi,
             idx,
+            always_include,
             hypotheses
         ):
-            input_grads = input_gradients(
-                params,
-                **input_grad_kwargs
-            )(inputs)
+            if always_include is not None:
+                idx = np.vstack()
             return sum(map(
-                lambda hypothesis: hypothesis(idx, input_grads),
+                lambda hypothesis: hypothesis(idx, input_grads[idx]),
                 hypotheses
             ))
 
         def objective(params, iteration):
+
+            def update_progress_bar(i, num_iters):
+                import sys
+                percent = i * 20 / num_iters
+                sys.stdout.write('\r')
+                sys.stdout.write("[%-20s] %d%%" % ('=' * int(percent), 5 * percent))
+                sys.stdout.flush()
+
+            update_progress_bar(iteration, num_epochs * num_batches)
+
             idx = batch_indices(iteration)
             Xi = X[idx]
             yi = y[idx]
+
+            # if always_include is not None:
+
+            #     Xi = np.vstack((X[always_include], Xi))
+            #     yi = np.vstack((y[always_include], yi))
 
             if normalize:
                 lenX = max(1., float(len(Xi)))
@@ -158,6 +179,7 @@ class MultilayerPerceptron:
             rightreasons = right_reasons(
                 Xi,
                 idx,
+                always_include,
                 hypotheses
             )
             smallparams = self.l2_params * l2_norm(params)
