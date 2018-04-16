@@ -1,6 +1,6 @@
 from autograd.misc import flatten
 
-import numpy as np
+import autograd.numpy as np
 
 
 def l2_norm(params):
