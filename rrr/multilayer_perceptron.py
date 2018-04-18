@@ -152,7 +152,7 @@ class MultilayerPerceptron:
             Xi = X[idx]
             yi = y[idx]
             if hypothesis is not None:
-                A = hypothesis.A
+                A = hypothesis
             else:
                 A = np.zeros_like(inputs).astype(bool)
             Ai = A[idx]
