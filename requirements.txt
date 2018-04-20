@@ -16,7 +16,6 @@ functools32==3.2.3.post2
 future==0.16.0
 gevent==1.2.2
 greenlet==0.4.13
-h2o==3.19.0.4215
 html5lib==1.0.1
 idna==2.6
 ipykernel==4.8.2
