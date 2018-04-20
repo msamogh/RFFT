@@ -175,7 +175,7 @@ class MultilayerPerceptron:
 
             if iteration % 200 == 0:
                 print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
-                    iteration, crossentropy, rightreasons, smallparams, lenX))
+                    iteration, crossentropy._value, rightreasons._value, smallparams._value, lenX))
             return crossentropy + rightreasons + smallparams
 
         self.params = adam(grad(objective), params,
