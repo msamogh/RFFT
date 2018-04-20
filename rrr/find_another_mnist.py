@@ -17,11 +17,11 @@ def score_model(mlp):
 print('Training f0')
 
 f0 = MultilayerPerceptron()
-f0.fit(X, y, hypothesis=hypothesis, num_epochs=8, always_include=indices)
+f0.fit(X, y, hypothesis=hypothesis, hypothesis_weight=1000, num_epochs=16, always_include=indices)
 score_model(f0)
 
 f0 = MultilayerPerceptron()
-f0.fit(X, y, num_epochs=8, always_include=indices)
+f0.fit(X, y, num_epochs=16, always_include=indices)
 score_model(f0)
 
 for l2 in [1000, 10000, 100000]:
