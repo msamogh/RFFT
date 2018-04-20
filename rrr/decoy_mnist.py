@@ -124,7 +124,6 @@ def generate_tagging_set(Xtr, size=20):
 def load_hypothesis(
     x,
     dirname='tagging/decoy_mnist',
-    weight=1.0,
     normalize=False
 ):
     xml_files = filter(
@@ -142,7 +141,6 @@ def load_hypothesis(
         affected_indices,
         Hypothesis(
             A,
-            weight=weight,
             normalize=normalize
         )
     )
