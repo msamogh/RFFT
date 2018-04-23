@@ -75,12 +75,21 @@ class MultilayerPerceptron:
         mlp.params = params
         return mlp
 
-    def __init__(self, layers=(50, 30), l2_params=0.0001, l2_grads=0.0001):
+    def __init__(
+        self,
+        layers=(50, 30),
+        l2_params=0.0001,
+        l2_grads=0.0001,
+        input_preprocessor=None
+    ):
         self.l2_params = l2_params
         self.l2_grads = l2_grads
         self.layers = list(layers)
+        self.input_preprocessor = input_preprocessor
 
     def predict_proba(self, inputs):
+        if self.input_preprocessor:
+            inputs = self.input_preprocessor(inputs)
         return np.exp(feed_forward(self.params, inputs))
 
     def predict(self, inputs):
@@ -173,7 +182,7 @@ class MultilayerPerceptron:
             rightreasons = self.l2_grads * hypothesis_weight * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
-            if iteration % 200 == 0:
+            if iteration % 20 == 0:
                 print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
                     iteration, crossentropy._value, rightreasons._value, smallparams._value, lenX))
             return crossentropy + rightreasons + smallparams
