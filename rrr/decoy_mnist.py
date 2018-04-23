@@ -10,10 +10,10 @@ import gzip
 import struct
 import array
 import autograd.numpy as np
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 from hypothesis import Hypothesis
-from parse import get_mask
+from parse import get_image_mask
 
 # install_aliases()
 
@@ -136,7 +136,7 @@ def load_hypothesis(
     for filename in xml_files:
         index = int(filename.split('.')[0])
         affected_indices.append(index)
-        A[index] = get_mask(os.path.join(dirname, filename), (28, 28)).flatten()
+        A[index] = get_image_mask(os.path.join(dirname, filename), (28, 28)).flatten()
     return (
         affected_indices,
         Hypothesis(
