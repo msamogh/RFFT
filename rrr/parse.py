@@ -27,14 +27,16 @@ def get_image_mask(bbox_path, image_size, valid_class_names=[]):
 
 
 def parent_word(word_endings, i):
+    print(word_endings)
+    print(i)
     word_endings = [-1] + word_endings
-    for x in range(len(word_endings)):
+    for x in range(len(word_endings) - 1):
         if i > word_endings[x] and i <= word_endings[x + 1]:
             return x
 
 
 def get_text_mask(
-    n_words,
+    vectorizer,
     annotations_map,
     text_files_base_dir,
     text_filename
@@ -44,12 +46,16 @@ def get_text_mask(
 
     word_endings = [i for i in range(len(text)) if text[i] == ' ']
 
-    ignore_words = np.zeros(n_words, dtype='uint8')
+    ignore_words = np.zeros(len(vectorizer.vocabulary_), dtype='uint8')
     annotations = annotations_map[text_filename]
     for ann in annotations:
         start, end = ann.split(',')
         start_word = parent_word(word_endings, int(start))
         end_word = parent_word(word_endings, int(end))
-        ignore_words[start_word:end_word + 1] = 1
-
+        words = text.split()[start_word:end_word + 1]
+        indices = []
+        for w in words:
+            if w in vectorizer.vocabulary_:
+                indices.append(vectorizer.vocabulary_[w])
+        ignore_words[indices] = 1
     return ignore_words
