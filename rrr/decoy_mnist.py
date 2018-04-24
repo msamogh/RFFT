@@ -136,7 +136,8 @@ def load_hypothesis(
     for filename in xml_files:
         index = int(filename.split('.')[0])
         affected_indices.append(index)
-        A[index] = get_image_mask(os.path.join(dirname, filename), (28, 28)).flatten()
+        A[index] = get_image_mask(os.path.join(
+            dirname, filename), (28, 28)).flatten()
     return (
         affected_indices,
         Hypothesis(

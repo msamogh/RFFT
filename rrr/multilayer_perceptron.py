@@ -112,7 +112,6 @@ class MultilayerPerceptron:
         grads = self.input_gradients(X, **kwargs)
         return np.array([np.abs(g) > cutoff * np.abs(g).max() for g in grads])
 
-
     def fit(
         self,
         inputs,
@@ -146,14 +145,14 @@ class MultilayerPerceptron:
             idx = iteration % num_batches
             return slice(idx * batch_size, (idx + 1) * batch_size)
 
-
         def objective(params, iteration):
 
             def update_progress_bar(i, num_iters):
                 import sys
                 percent = i * 20 / num_iters
                 sys.stdout.write('\r')
-                sys.stdout.write("[%-20s] %d%%" % ('=' * int(percent), 5 * percent))
+                sys.stdout.write("[%-20s] %d%%" %
+                                 ('=' * int(percent), 5 * percent))
                 sys.stdout.flush()
 
             update_progress_bar(iteration, num_epochs * num_batches)
@@ -179,7 +178,8 @@ class MultilayerPerceptron:
 
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
-            rightreasons = self.l2_grads * hypothesis_weight * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+            rightreasons = self.l2_grads * hypothesis_weight * \
+                l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % 20 == 0:

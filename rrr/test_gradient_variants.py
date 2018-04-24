@@ -1,13 +1,16 @@
-import sys; sys.path.append('rrr')
+import sys
+sys.path.append('rrr')
 import decoy_mnist
 from multilayer_perceptron import *
 import numpy as np
 import pdb
 import pickle
 
+
 def dumlp(mlp, fname):
-  fname = 'data/decoy_mnist_{}.pkl'.format(fname)
-  pickle.dump(mlp.params, open(fname, 'wb'))
+    fname = 'data/decoy_mnist_{}.pkl'.format(fname)
+    pickle.dump(mlp.params, open(fname, 'wb'))
+
 
 Xr, X, y, E, Xtr, Xt, yt, Et = decoy_mnist.generate_dataset()
 
