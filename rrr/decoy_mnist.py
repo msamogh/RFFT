@@ -10,10 +10,10 @@ import gzip
 import struct
 import array
 import autograd.numpy as np
-from urllib.request import urlopen
+from urllib import urlopen
 
-from hypothesis import Hypothesis
-from parse import get_image_mask
+from .hypothesis import Hypothesis
+from .parse import get_image_mask
 
 # install_aliases()
 
