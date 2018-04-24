@@ -34,7 +34,8 @@ def load_hypothesis(
     text_files_base_dir='../text_tagger/Newsgroup-20'
 ):
     annotations_map = json.load(open(annotations_map_file, 'r'))
-    text_files = [x for x in os.listdir(text_files_base_dir) if x.endswith('.txt')]
+    text_files = [x for x in os.listdir(
+        text_files_base_dir) if x.endswith('.txt')]
     A = np.zeros_like(len(vectorizer.vocabulary_)).astype(bool)
     for file in text_files:
         if file not in annotations_map:
@@ -59,7 +60,6 @@ mlp.fit(train_vectors, newsgroups_train.target, hypothesis=A, num_epochs=20)
 pred = mlp.predict(test_vectors)
 # pred = rf.predict(test_vectors)
 print(sklearn.metrics.f1_score(newsgroups_test.target, pred, average='binary'))
-
 
 
 c = make_pipeline(vectorizer, mlp)
