@@ -3,7 +3,7 @@ class Hypothesis(object):
     def __init__(
         self,
         A,
-        weight=1.0,
+        weight=10,
         normalize=False
     ):
         self.A = A

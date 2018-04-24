@@ -14,7 +14,7 @@ from lime import lime_text
 from lime.lime_text import LimeTextExplainer
 
 from rfft.multilayer_perceptron import *
-from .parse import get_text_mask
+from parse import get_text_mask
 
 ATHEISM = 'alt.atheism'
 CHRISTIANITY = 'soc.religion.christian'

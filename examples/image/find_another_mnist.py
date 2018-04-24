@@ -9,6 +9,7 @@ import pickle
 
 Xr, X, y, E, Xtr, Xt, yt, Et = decoy_mnist.generate_dataset()
 indices, hypothesis = decoy_mnist.load_hypothesis(X)
+hypothesis.weight = 1000
 
 
 def score_model(mlp):
@@ -18,7 +19,7 @@ def score_model(mlp):
 print('Training f0')
 
 f0 = MultilayerPerceptron()
-f0.fit(X, y, hypothesis=hypothesis, hypothesis_weight=1000,
+f0.fit(X, y, hypothesis=hypothesis,
        num_epochs=16, always_include=indices)
 score_model(f0)
 
@@ -29,6 +30,7 @@ score_model(f0)
 for l2 in [1000, 10000, 100000]:
     print('l2 =', l2)
     hypothesis.weight = l2 * 100
+
     f1 = MultilayerPerceptron(l2_grads=l2)
     f2 = MultilayerPerceptron(l2_grads=l2)
     f3 = MultilayerPerceptron(l2_grads=l2)
