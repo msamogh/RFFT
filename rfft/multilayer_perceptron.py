@@ -177,8 +177,11 @@ class MultilayerPerceptron:
 
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
-            rightreasons = self.l2_grads * hypothesis.weight * \
-                l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+            if hypothesis is not None:
+                rightreasons = self.l2_grads * hypothesis.weight * \
+                    l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+            else:
+                rightreasons = 0 * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % 20 == 0:
