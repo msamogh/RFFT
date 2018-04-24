@@ -9,7 +9,7 @@ import pickle
 
 Xr, X, y, E, Xtr, Xt, yt, Et = decoy_mnist.generate_dataset()
 indices, hypothesis = decoy_mnist.load_hypothesis(X)
-hypothesis.weight = 1000
+hypothesis.weight = 100
 
 
 def score_model(mlp):
