@@ -58,9 +58,21 @@ def Bern(p):
 def augment(image, digit, randomize=False, mult=25, all_digits=range(10)):
     if randomize:
         return augment(image, np.random.choice(all_digits))
+
     img = image.copy()
     expl = np.zeros_like(img)
+
+    fwd = [0, 1, 2, 3]
+    rev = [-1, -2, -3, -4]
+    dir1 = fwd if Bern(0.5) else rev
+    dir2 = fwd if Bern(0.5) else rev
+    for i in dir1:
+        for j in dir2:
+            img[i][j] = 255 - mult * digit
+            expl[i][j] = 1
+
     return img.ravel(), expl.astype(bool).ravel()
+
 
 
 def _generate_dataset(datadir):
@@ -118,7 +130,7 @@ def generate_tagging_set(Xtr, size=20):
         if index in indices:
             continue
         indices.append(index)
-        save_image_to_file(Xtr[index], index)
+        save_image_to_file(Xtr[index], index, show=True)
 
 
 def load_hypothesis(
