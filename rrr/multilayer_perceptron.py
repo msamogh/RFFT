@@ -75,12 +75,21 @@ class MultilayerPerceptron:
         mlp.params = params
         return mlp
 
-    def __init__(self, layers=(50, 30), l2_params=0.0001, l2_grads=0.0001):
+    def __init__(
+        self,
+        layers=(50, 30),
+        l2_params=0.0001,
+        l2_grads=0.0001,
+        input_preprocessor=None
+    ):
         self.l2_params = l2_params
         self.l2_grads = l2_grads
         self.layers = list(layers)
+        self.input_preprocessor = input_preprocessor
 
     def predict_proba(self, inputs):
+        if self.input_preprocessor:
+            inputs = self.input_preprocessor(inputs)
         return np.exp(feed_forward(self.params, inputs))
 
     def predict(self, inputs):
@@ -102,7 +111,6 @@ class MultilayerPerceptron:
     def largest_gradient_mask(self, X, cutoff=0.67, **kwargs):
         grads = self.input_gradients(X, **kwargs)
         return np.array([np.abs(g) > cutoff * np.abs(g).max() for g in grads])
-
 
     def fit(
         self,
@@ -137,14 +145,14 @@ class MultilayerPerceptron:
             idx = iteration % num_batches
             return slice(idx * batch_size, (idx + 1) * batch_size)
 
-
         def objective(params, iteration):
 
             def update_progress_bar(i, num_iters):
                 import sys
                 percent = i * 20 / num_iters
                 sys.stdout.write('\r')
-                sys.stdout.write("[%-20s] %d%%" % ('=' * int(percent), 5 * percent))
+                sys.stdout.write("[%-20s] %d%%" %
+                                 ('=' * int(percent), 5 * percent))
                 sys.stdout.flush()
 
             update_progress_bar(iteration, num_epochs * num_batches)
@@ -170,10 +178,11 @@ class MultilayerPerceptron:
 
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
-            rightreasons = self.l2_grads * hypothesis_weight * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+            rightreasons = self.l2_grads * hypothesis_weight * \
+                l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
-            if iteration % 200 == 0:
+            if iteration % 20 == 0:
                 print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
                     iteration, crossentropy._value, rightreasons._value, smallparams._value, lenX))
             return crossentropy + rightreasons + smallparams

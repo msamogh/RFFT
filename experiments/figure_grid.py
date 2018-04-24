@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 
+
 class figure_grid():
     def next_subplot(self, **kwargs):
         if self.subplots:
-          self.after_each()
+            self.after_each()
         self.subplots += 1
         return self.fig.add_subplot(self.rows, self.cols, self.subplots, **kwargs)
 
@@ -20,7 +21,7 @@ class figure_grid():
         self.fig = plt.figure(figsize=(rowwidth, rowheight*self.rows))
         self.subplots = 0
         if after_each == 'legend':
-          after_each = lambda: plt.legend(loc='best')
+            def after_each(): return plt.legend(loc='best')
         self.after_each = after_each
         self.after_all = after_all
 
