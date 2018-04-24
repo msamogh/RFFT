@@ -9,3 +9,7 @@ class Hypothesis(object):
         self.A = A
         self.weight = weight
         self.normalize = normalize
+
+
+    def __repr__(self):
+    	return 'Weight: %f' % self.weight
