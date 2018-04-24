@@ -5,7 +5,7 @@ from autograd import grad, elementwise_grad
 from autograd.misc import flatten
 from autograd.misc.optimizers import adam
 
-from hypothesis import Hypothesis
+from .hypothesis import Hypothesis
 # from local_linear_explanation import LocalLinearExplanation
 
 # Adapted from https://github.com/HIPS/autograd/blob/master/examples/neural_net.py
