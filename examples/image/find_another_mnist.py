@@ -2,7 +2,7 @@ from time import sleep
 import sys
 sys.path.append('rrr')
 import decoy_mnist
-from multilayer_perceptron import *
+from rfft.multilayer_perceptron import *
 import autograd.numpy as np
 import pdb
 import pickle
