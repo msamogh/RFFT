@@ -10,7 +10,10 @@ import gzip
 import struct
 import array
 import autograd.numpy as np
-from urllib.request import urlretrieve
+try:
+    from urllib.request import urlretrieve
+except ImportError:
+    from urllib import urlopen
 
 from rfft.hypothesis import Hypothesis
 from parse import get_image_mask
@@ -37,7 +40,10 @@ def download_mnist(datadir):
     for filename in ['train-images-idx3-ubyte.gz', 'train-labels-idx1-ubyte.gz',
                      't10k-images-idx3-ubyte.gz', 't10k-labels-idx1-ubyte.gz']:
         if not os.path.exists(os.path.join(datadir, filename)):
-            urlretrieve(base_url + filename, os.path.join(datadir, filename))
+            try:
+                urlretrieve(base_url + filename, os.path.join(datadir, filename))
+            except:
+                urlopen(base_url + filename, os.path.join(datadir, filename))
 
     train_images = parse_images(os.path.join(
         datadir, 'train-images-idx3-ubyte.gz'))
