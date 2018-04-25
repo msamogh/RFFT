@@ -126,6 +126,7 @@ class MultilayerPerceptron:
         nonlinearity=relu,
         verbose=False,
         callback=None,
+        show_progress=True,
         **input_grad_kwargs
     ):
         X = inputs.astype(np.float32)
@@ -154,7 +155,8 @@ class MultilayerPerceptron:
                                  ('=' * int(percent), 5 * percent))
                 sys.stdout.flush()
 
-            update_progress_bar(iteration, num_epochs * num_batches)
+            if show_progress:
+                update_progress_bar(iteration, num_epochs * num_batches)
 
             idx = batch_indices(iteration)
             Xi = X[idx]
