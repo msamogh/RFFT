@@ -8,6 +8,10 @@ from PIL import Image
 from rfft.hypothesis import Hypothesis
 #from keras.datasets import cifar10
 from parse import *
+import sys
+sys.path.append('../../rfft/')
+
+
 
 def convert_to_pkl():
 	files = os.listdir('data/decoy-cifar/images')
@@ -60,7 +64,7 @@ def get_data():
 	x = a[0]
 	y = a[1]	
 
-	#x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.33,random_state=42)
+	x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.33,random_state=42)
 	x_train = x
 	y_train = y
 
@@ -70,7 +74,7 @@ def get_data():
 	y_test = np.array(a['labels'])
 
 	x_test = x_test.reshape(x_test.shape[0],32,32,3)
-	return x_train,y_train,x_test[:2000],y_test[:2000]
+	return x_train,y_train,x_test,y_test
 
 
 def generate_dataset():
