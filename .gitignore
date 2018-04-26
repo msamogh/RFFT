@@ -1,0 +1,5 @@
+**/data/*
+examples/tagging/decoy_mnist/*.png
+*.DS_Store
+**/.ipynb_checkpoints/
+**/__pycache__/
