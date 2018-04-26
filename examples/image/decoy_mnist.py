@@ -7,15 +7,15 @@ import autograd.numpy.random as npr
 
 import os
 import gzip
+import pickle
 import struct
 import array
 import autograd.numpy as np
 from urllib.request import urlretrieve
 
+from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 from parse import get_image_mask
-
-# install_aliases()
 
 
 def download_mnist(datadir):
@@ -161,5 +161,27 @@ def load_hypothesis(
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    generate_tagging_set(X)
-    print(load_hypothesis(X))
+    indices, hypothesis = load_hypothesis(X)
+    hypothesis.weight = 800000
+
+    def score_model(mlp):
+        print('Train: {0}, Test: {1}'.format(mlp.score(X, y), mlp.score(Xt, yt)))
+
+    print('Training f0')
+
+    if False and os.path.exists('models/1.pkl'):
+        f0 = pickle.load(open('models/1.pkl', 'rb'))
+    else:
+        f0 = MultilayerPerceptron()
+        f0.fit(X, y, hypothesis=hypothesis,
+              num_epochs=16, always_include=indices)
+        pickle.dump(f0, open('models/1.pkl', 'wb'))
+    score_model(f0)
+
+    if os.path.exists('models/2.pkl'):
+        f0 = pickle.load(open('models/2.pkl', 'rb'))
+    else:
+        f0 = MultilayerPerceptron()
+        f0.fit(X, y, num_epochs=16, always_include=indices)
+        pickle.dump(f0, open('models/2.pkl', 'wb'))
+    score_model(f0)
