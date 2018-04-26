@@ -14,6 +14,6 @@ The `examples/` folder has been organized into domains of `image`, `tabular`, an
 
 ## Credits
 Amogh Mannekote \
-Shishira Maiyya \
+Shishira R Maiya \
 Vishal Panjeta \
 Ahamed Shoaib
