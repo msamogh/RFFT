@@ -1,3 +1,5 @@
+import sys
+
 import autograd.numpy as np
 import autograd.numpy.random as npr
 from autograd.scipy.misc import logsumexp
@@ -126,7 +128,7 @@ class MultilayerPerceptron:
         nonlinearity=relu,
         verbose=False,
         callback=None,
-        show_progress=True,
+        show_progress_every=None,
         **input_grad_kwargs
     ):
         X = inputs.astype(np.float32)
@@ -148,14 +150,13 @@ class MultilayerPerceptron:
         def objective(params, iteration):
 
             def update_progress_bar(i, num_iters):
-                import sys
                 percent = i * 20 / num_iters
                 sys.stdout.write('\r')
                 sys.stdout.write("[%-20s] %d%%" %
                                  ('=' * int(percent), 5 * percent))
                 sys.stdout.flush()
 
-            if show_progress:
+            if show_progress_every is not None and iteration % show_progress_every == 0:
                 update_progress_bar(iteration, num_epochs * num_batches)
 
             idx = batch_indices(iteration)
@@ -186,9 +187,11 @@ class MultilayerPerceptron:
                 rightreasons = 0 * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
-            if iteration % 20 == 0:
-                print('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
+            if iteration % show_progress_every == 0 and verbose:
+                sys.stdout.write('\r')
+                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
                     iteration, crossentropy._value, rightreasons._value, smallparams._value, lenX))
+                sys.stdout.flush()
             return crossentropy + rightreasons + smallparams
 
         self.params = adam(grad(objective), params,
