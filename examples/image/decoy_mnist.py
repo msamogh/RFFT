@@ -139,23 +139,36 @@ def generate_tagging_set(Xtr, size=20):
         save_image_to_file(Xtr[index], index, show=True)
 
 
-def load_hypothesis(
-    x,
+def load_annotations(
+    mask_shape,
     dirname='tagging/decoy_mnist',
     normalize=False
 ):
-    xml_files = filter(
+    xml_files = list(filter(
         lambda x: x.endswith('.xml'),
         os.listdir(dirname)
-    )
+    ))
+    xml_files = list(map(
+        lambda x: os.path.join(dirname, x),
+        xml_files
+    ))
+    return load_hypothesis(mask_shape, xml_files, normalize)
 
-    A = np.zeros_like(x).astype(bool)
+
+def load_hypothesis(
+    mask_shape,
+    xml_files,
+    normalize=False
+):
+    A = np.zeros(mask_shape).astype(bool)
     affected_indices = []
-    for filename in xml_files:
-        index = int(filename.split('.')[0])
+
+    for filepath in xml_files:
+        index = int(filepath.split('/')[-1].split('.')[0])
+        mask = get_image_mask(filepath, (28, 28)).flatten()
+
         affected_indices.append(index)
-        A[index] = get_image_mask(os.path.join(
-            dirname, filename), (28, 28)).flatten()
+        A[index] = mask
     return (
         affected_indices,
         Hypothesis(
@@ -167,14 +180,13 @@ def load_hypothesis(
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    indices, hypothesis = load_hypothesis(X)
+    indices, hypothesis = load_annotations(X.shape)
     hypothesis.weight = 800000
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(mlp.score(X, y), mlp.score(Xt, yt)))
 
-    print('Training f0')
-
+    print('Training with annotations')    
     if False and os.path.exists('models/1.pkl'):
         f0 = pickle.load(open('models/1.pkl', 'rb'))
     else:
@@ -184,6 +196,7 @@ if __name__ == '__main__':
         pickle.dump(f0, open('models/1.pkl', 'wb'))
     score_model(f0)
 
+    print('Training without annotations')
     if os.path.exists('models/2.pkl'):
         f0 = pickle.load(open('models/2.pkl', 'rb'))
     else:
