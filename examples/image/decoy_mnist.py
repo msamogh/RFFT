@@ -180,8 +180,17 @@ def load_hypothesis(
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    indices, hypothesis = load_annotations(X.shape)
-    hypothesis.weight = 500
+    dirname = 'tagging/decoy_mnist'
+    xml_files = list(filter(
+        lambda x: x.endswith('.xml'),
+        os.listdir(dirname)
+    ))
+    xml_files = list(map(
+        lambda x: os.path.join(dirname, x),
+        xml_files
+    ))
+    indices, hypothesis = load_hypothesis(X.shape, xml_files[:30])
+    hypothesis.weight = 10000000
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(
