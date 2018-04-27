@@ -41,7 +41,8 @@ def download_mnist(datadir):
                      't10k-images-idx3-ubyte.gz', 't10k-labels-idx1-ubyte.gz']:
         if not os.path.exists(os.path.join(datadir, filename)):
             try:
-                urlretrieve(base_url + filename, os.path.join(datadir, filename))
+                urlretrieve(base_url + filename,
+                            os.path.join(datadir, filename))
             except:
                 urlopen(base_url + filename, os.path.join(datadir, filename))
 
@@ -78,7 +79,6 @@ def augment(image, digit, randomize=False, mult=25, all_digits=range(10)):
             expl[i][j] = 1
 
     return img.ravel(), expl.astype(bool).ravel()
-
 
 
 def _generate_dataset(datadir):
@@ -184,15 +184,16 @@ if __name__ == '__main__':
     hypothesis.weight = 800000
 
     def score_model(mlp):
-        print('Train: {0}, Test: {1}'.format(mlp.score(X, y), mlp.score(Xt, yt)))
+        print('Train: {0}, Test: {1}'.format(
+            mlp.score(X, y), mlp.score(Xt, yt)))
 
-    print('Training with annotations')    
+    print('Training with annotations')
     if False and os.path.exists('models/1.pkl'):
         f0 = pickle.load(open('models/1.pkl', 'rb'))
     else:
         f0 = MultilayerPerceptron()
         f0.fit(X, y, hypothesis=hypothesis,
-              num_epochs=16, always_include=indices)
+               num_epochs=16, always_include=indices)
         pickle.dump(f0, open('models/1.pkl', 'wb'))
     score_model(f0)
 
