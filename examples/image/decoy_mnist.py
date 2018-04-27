@@ -181,7 +181,7 @@ def load_hypothesis(
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
     indices, hypothesis = load_annotations(X.shape)
-    hypothesis.weight = 800000
+    hypothesis.weight = 1000
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     else:
         f0 = MultilayerPerceptron()
         f0.fit(X, y, hypothesis=hypothesis,
-               num_epochs=16, always_include=indices)
+               num_epochs=16, always_include=indices, verbose=True)
         pickle.dump(f0, open('models/1.pkl', 'wb'))
     score_model(f0)
 

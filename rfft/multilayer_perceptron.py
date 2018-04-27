@@ -128,7 +128,7 @@ class MultilayerPerceptron:
         nonlinearity=relu,
         verbose=False,
         callback=None,
-        show_progress_every=None,
+        show_progress_every=100,
         **input_grad_kwargs
     ):
         X = inputs.astype(np.float32)
@@ -165,7 +165,7 @@ class MultilayerPerceptron:
             if hypothesis is not None:
                 A = hypothesis.A
             else:
-                A = np.zeros_like(inputs).astype(bool)
+                A = np.ones_like(inputs).astype(bool)
             Ai = A[idx]
 
             if always_include is not None:
@@ -181,9 +181,10 @@ class MultilayerPerceptron:
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
             if hypothesis is not None:
-                rightreasons = hypothesis.weight * \
-                    l2_norm(input_gradients(
-                        params, **input_grad_kwargs)(Xi)[Ai])
+                norm = l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+                # if norm == 0:
+                #     norm = 0.00001
+                rightreasons = hypothesis.weight * norm
             else:
                 rightreasons = 0 * \
                     l2_norm(input_gradients(
@@ -191,8 +192,8 @@ class MultilayerPerceptron:
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % show_progress_every == 0 and verbose:
-                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}'.format(
-                    iteration, crossentropy._value, rightreasons._value))
+                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}'.format(
+                    iteration, crossentropy._value, rightreasons._value, smallparams._value))
                 sys.stdout.flush()
             return crossentropy + rightreasons + smallparams
 
