@@ -1,3 +1,5 @@
+import random
+
 class Hypothesis(object):
 
     def __init__(
@@ -12,7 +14,8 @@ class Hypothesis(object):
 
 
     @staticmethod
-    def incrementally_sample(annotations, hypothesis_load_fn, mask_shape, increment=5):
+    def incrementally_sample(annotations, hypothesis_load_fn, mask_shape, increment=5, shuffle=True):
+        random.shuffle(annotations)
         for i in range(0, len(annotations) + 1, increment):
             yield hypothesis_load_fn(mask_shape, annotations[:i])
 
