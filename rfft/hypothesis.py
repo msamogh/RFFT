@@ -13,8 +13,8 @@ class Hypothesis(object):
 
     @staticmethod
     def incrementally_sample(annotations, hypothesis_load_fn, mask_shape, increment=5):
-        for i in range(0, len(annotations), increment):
-            yield hypothesis_load_fn(mask_shape, annotations[:i + 1])
+        for i in range(0, len(annotations) + 1, increment):
+            yield hypothesis_load_fn(mask_shape, annotations[:i])
 
 
     def __repr__(self):
