@@ -136,7 +136,7 @@ def generate_tagging_set(Xtr, size=20):
         if index in indices:
             continue
         indices.append(index)
-        save_image_to_file(Xtr[index], index, show=True)
+        save_image_to_file(Xtr[index], index)
 
 
 def load_annotations(
