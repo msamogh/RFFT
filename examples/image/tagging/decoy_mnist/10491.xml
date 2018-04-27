@@ -1,7 +1,7 @@
 <annotation>
 	<folder>decoy_mnist</folder>
 	<filename>10491.png</filename>
-	<path>C:\Users\IBM_ADMIN\torch\rrr\rrr\tagging\decoy_mnist\10491.png</path>
+	<path>/home/atithi/lime/rrr/examples/image/tagging/decoy_mnist/10491.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>2</xmin>
-			<ymin>3</ymin>
-			<xmax>25</xmax>
-			<ymax>26</ymax>
+			<xmin>5</xmin>
+			<ymin>4</ymin>
+			<xmax>23</xmax>
+			<ymax>25</ymax>
 		</bndbox>
 	</object>
 </annotation>
