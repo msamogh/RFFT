@@ -188,9 +188,8 @@ class MultilayerPerceptron:
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % show_progress_every == 0 and verbose:
-                sys.stdout.write('\r')
-                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}, lenX={}'.format(
-                    iteration, crossentropy._value, rightreasons._value, smallparams._value, lenX))
+                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}'.format(
+                    iteration, crossentropy._value, rightreasons._value))
                 sys.stdout.flush()
             return crossentropy + rightreasons + smallparams
 
