@@ -182,9 +182,12 @@ class MultilayerPerceptron:
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
             if hypothesis is not None:
                 rightreasons = hypothesis.weight * \
-                    l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+                    l2_norm(input_gradients(
+                        params, **input_grad_kwargs)(Xi)[Ai])
             else:
-                rightreasons = 0 * l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+                rightreasons = 0 * \
+                    l2_norm(input_gradients(
+                        params, **input_grad_kwargs)(Xi)[Ai])
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % show_progress_every == 0 and verbose:
@@ -195,4 +198,3 @@ class MultilayerPerceptron:
 
         self.params = adam(grad(objective), params,
                            step_size=step_size, num_iters=num_epochs * num_batches)
-
