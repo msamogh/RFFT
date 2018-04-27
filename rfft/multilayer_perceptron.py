@@ -182,9 +182,9 @@ class MultilayerPerceptron:
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
             if hypothesis is not None:
                 norm = l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
-                # if norm == 0:
-                #     norm = 0.00001
-                rightreasons = hypothesis.weight * norm
+                if norm == 0:
+                    norm = 0.00001
+                rightreasons = hypothesis.weight / norm
             else:
                 rightreasons = 0 * \
                     l2_norm(input_gradients(

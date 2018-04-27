@@ -181,7 +181,7 @@ def load_hypothesis(
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
     indices, hypothesis = load_annotations(X.shape)
-    hypothesis.weight = 1000
+    hypothesis.weight = 500
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(
