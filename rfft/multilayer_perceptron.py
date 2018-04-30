@@ -99,10 +99,6 @@ class MultilayerPerceptron(Perceptron):
             kwargs['scale'] = None  # default to non-log probs
         return input_gradients(self.params, **kwargs)(X.astype(np.float32))
 
-    def largest_gradient_mask(self, X, cutoff=0.67, **kwargs):
-        grads = self.input_gradients(X, **kwargs)
-        return np.array([np.abs(g) > cutoff * np.abs(g).max() for g in grads])
-
     def fit(
         self,
         inputs,
