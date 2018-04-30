@@ -99,10 +99,6 @@ class TensorflowPerceptron(Perceptron):
             grads = tf.gradients(probs, self.X)[0].eval(feed_dict={self.X: X})
         return grads
 
-    def largest_gradient_mask(self, X, cutoff=0.67, **kwargs):
-        grads = self.input_gradients(X, **kwargs)
-        return np.array([np.abs(g) > cutoff*np.abs(g).max() for g in grads])
-
     def predict_log_proba(self, X):
         with tf.Session() as session:
             self._initialize_variables(session)
