@@ -139,26 +139,10 @@ def generate_tagging_set(Xtr, size=20):
         save_image_to_file(Xtr[index], index)
 
 
-def load_annotations(
-    mask_shape,
-    dirname='tagging/decoy_mnist',
-    normalize=False
-):
-    xml_files = list(filter(
-        lambda x: x.endswith('.xml'),
-        os.listdir(dirname)
-    ))
-    xml_files = list(map(
-        lambda x: os.path.join(dirname, x),
-        xml_files
-    ))
-    return load_hypothesis(mask_shape, xml_files, normalize)
-
-
 def load_hypothesis(
-    mask_shape,
     xml_files,
-    normalize=False
+    mask_shape,
+    **hypothesis_params
 ):
     A = np.zeros(mask_shape).astype(bool)
     affected_indices = []
@@ -173,15 +157,18 @@ def load_hypothesis(
         affected_indices,
         Hypothesis(
             A,
-            normalize=normalize
+            **hypothesis_params
         )
     )
 
 
 if __name__ == '__main__':
     Xr, X, y, E, Xtr, Xt, yt, Et = generate_dataset()
-    indices, hypothesis = load_annotations(X.shape)
-    hypothesis.weight = 800000
+    dirname = 'tagging/decoy_mnist'
+    xml_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.xml')]
+    indices, hypothesis = load_hypothesis(xml_files=xml_files,
+                                          mask_shape=X.shape)
+    print(hypothesis)
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(
@@ -193,7 +180,7 @@ if __name__ == '__main__':
     else:
         f0 = MultilayerPerceptron()
         f0.fit(X, y, hypothesis=hypothesis,
-               num_epochs=16, always_include=indices)
+               num_epochs=6, always_include=indices)
         pickle.dump(f0, open('models/1.pkl', 'wb'))
     score_model(f0)
 
