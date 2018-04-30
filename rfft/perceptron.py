@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Perceptron(object):
 
     def grad_explain(self, X, **kwargs):
