@@ -3,13 +3,13 @@ import numpy as np
 from local_linear_explanation import LocalLinearExplanation
 import time
 
-from .utils import one_hot
+from .perceptron import Perceptron, one_hot
 
 
 def to_logprob(L): return L - tf.reduce_logsumexp(L, axis=1, keep_dims=True)
 
 
-class TensorflowPerceptron():
+class TensorflowPerceptron(Perceptron):
     def loss_function(self, l2_grads=1000, l1_grads=0, l2_params=0.0001):
         right_answer_loss = tf.reduce_sum(
             tf.multiply(self.y, -self.log_prob_ys))
@@ -117,8 +117,3 @@ class TensorflowPerceptron():
 
     def score(self, X, y):
         return np.mean(self.predict(X) == y)
-
-    def grad_explain(self, X, **kwargs):
-        yhats = self.predict(X)
-        coefs = self.input_gradients(X, **kwargs)
-        return [LocalLinearExplanation(X[i], yhats[i], coefs[i]) for i in range(len(X))]

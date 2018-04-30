@@ -7,7 +7,7 @@ from autograd import grad, elementwise_grad
 from autograd.misc import flatten
 from autograd.misc.optimizers import adam
 
-from .utils import one_hot
+from .perceptron import Perceptron, one_hot
 from .hypothesis import Hypothesis
 # from local_linear_explanation import LocalLinearExplanation
 
@@ -63,7 +63,7 @@ def init_random_params(scale, layer_sizes, rs=npr):
             for m, n in zip(layer_sizes[:-1], layer_sizes[1:])]
 
 
-class MultilayerPerceptron:
+class MultilayerPerceptron(Perceptron):
 
     @classmethod
     def from_params(klass, params):
@@ -98,11 +98,6 @@ class MultilayerPerceptron:
         if 'scale' not in kwargs:
             kwargs['scale'] = None  # default to non-log probs
         return input_gradients(self.params, **kwargs)(X.astype(np.float32))
-
-    def grad_explain(self, X, **kwargs):
-        yhats = self.predict(X)
-        coefs = self.input_gradients(X, **kwargs)
-        return [LocalLinearExplanation(X[i], yhats[i], coefs[i]) for i in range(len(X))]
 
     def largest_gradient_mask(self, X, cutoff=0.67, **kwargs):
         grads = self.input_gradients(X, **kwargs)
