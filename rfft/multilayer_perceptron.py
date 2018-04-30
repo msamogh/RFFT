@@ -113,7 +113,7 @@ class MultilayerPerceptron(Perceptron):
         nonlinearity=relu,
         verbose=False,
         callback=None,
-        show_progress_every=None,
+        show_progress_every=100,
         **input_grad_kwargs
     ):
         X = inputs.astype(np.float32)
