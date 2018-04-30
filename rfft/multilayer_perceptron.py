@@ -63,6 +63,19 @@ def init_random_params(scale, layer_sizes, rs=npr):
             for m, n in zip(layer_sizes[:-1], layer_sizes[1:])]
 
 
+def batch_indices(iteration, num_batches, batch_size):
+    idx = iteration % num_batches
+    return slice(idx * batch_size, (idx + 1) * batch_size)
+
+
+def update_progress_bar(i, num_iters):
+    percent = i * 20 / num_iters
+    sys.stdout.write('\r')
+    sys.stdout.write("[%-20s] %d%%" %
+                     ('=' * int(percent), 5 * percent))
+    sys.stdout.flush()
+
+
 class MultilayerPerceptron(Perceptron):
 
     @classmethod
@@ -128,23 +141,12 @@ class MultilayerPerceptron(Perceptron):
             **input_grad_kwargs
         )(inputs)
 
-        def batch_indices(iteration):
-            idx = iteration % num_batches
-            return slice(idx * batch_size, (idx + 1) * batch_size)
 
         def objective(params, iteration):
-
-            def update_progress_bar(i, num_iters):
-                percent = i * 20 / num_iters
-                sys.stdout.write('\r')
-                sys.stdout.write("[%-20s] %d%%" %
-                                 ('=' * int(percent), 5 * percent))
-                sys.stdout.flush()
-
             if show_progress_every is not None and iteration % show_progress_every == 0:
                 update_progress_bar(iteration, num_epochs * num_batches)
 
-            idx = batch_indices(iteration)
+            idx = batch_indices(iteration, num_batches, batch_size)
             Xi = X[idx]
             yi = y[idx]
             if hypothesis is not None:
@@ -170,9 +172,7 @@ class MultilayerPerceptron(Perceptron):
                     l2_norm(input_gradients(
                         params, **input_grad_kwargs)(Xi)[Ai])
             else:
-                rightreasons = 0 * \
-                    l2_norm(input_gradients(
-                        params, **input_grad_kwargs)(Xi)[Ai])
+                rightreasons = 0
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % show_progress_every == 0 and verbose:
