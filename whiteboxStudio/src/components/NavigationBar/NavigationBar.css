@@ -1,0 +1,38 @@
+.NavigationBar {
+  min-width: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-image: linear-gradient(to top, rgb(7, 150, 207), rgb(10, 29, 58));
+  color: white;
+}
+
+.NavigationBar-section {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.NavigationBar-Button {
+  font-family: Roboto;
+  font-size: 0.9rem;
+  line-height: 2.71;
+  text-align: left;
+  color: white;
+  background-color: Transparent;
+  border: none;
+}
+
+.NavigationBar-Button:focus {
+  outline: 0;
+}
+
+.NavigationBar-Heading {
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-align: left;
+  color: #8992ca;
+}
