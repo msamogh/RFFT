@@ -3,15 +3,10 @@ import numpy as np
 from local_linear_explanation import LocalLinearExplanation
 import time
 
+from .utils import one_hot
+
 
 def to_logprob(L): return L - tf.reduce_logsumexp(L, axis=1, keep_dims=True)
-
-
-def one_hot(y):
-    if len(y.shape) != 1:
-        return y
-    values = np.array(sorted(list(set(y))))
-    return np.array([values == v for v in y], dtype=np.uint8)
 
 
 class TensorflowPerceptron():

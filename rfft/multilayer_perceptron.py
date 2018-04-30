@@ -7,19 +7,13 @@ from autograd import grad, elementwise_grad
 from autograd.misc import flatten
 from autograd.misc.optimizers import adam
 
+from .utils import one_hot
 from .hypothesis import Hypothesis
 # from local_linear_explanation import LocalLinearExplanation
 
 # Adapted from https://github.com/HIPS/autograd/blob/master/examples/neural_net.py
 # with modifications made such that we have a first-class MLP object
 # and such that our loss function includes an explanation penalty.
-
-
-def one_hot(y):
-    if len(y.shape) != 1:
-        return y
-    values = np.array(sorted(list(set(y))))
-    return np.array([values == v for v in y], dtype=np.uint8)
 
 
 def relu(inputs):
