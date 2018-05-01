@@ -11,10 +11,8 @@ class Hypothesis(object):
         normalize=False
     ):
         self.A = A
-        self.A_inverse = np.array(A, copy=True)
-        self.A_inverse[self.A_inverse == 1] = 2
-        self.A_inverse[self.A_inverse == 0] = 1
-        self.A_inverse[self.A_inverse == 2] = 0
+        invert = np.vectorize(lambda x: not x)
+        self.A_inverse = invert(A)
         self.weight = weight
         self.normalize = normalize
 
