@@ -10,6 +10,7 @@ import gzip
 import pickle
 import struct
 import array
+import random
 import autograd.numpy as np
 try:
     from urllib.request import urlretrieve
@@ -55,7 +56,20 @@ def download_mnist(datadir):
     test_labels = parse_labels(os.path.join(
         datadir, 't10k-labels-idx1-ubyte.gz'))
 
-    return train_images, train_labels, test_images, test_labels
+    train_size = len(train_images)    
+
+    # Shuffle everything up
+    train_set = list(zip(train_images, train_labels))
+    test_set = list(zip(test_images, test_labels))
+    combined = train_set + test_set
+    random.shuffle(combined)
+
+    train_set = combined[:train_size]
+    test_set = combined[train_size:]
+    train_images, train_labels = zip(*train_set)
+    test_images, test_labels = zip(*test_set)
+
+    return np.array(train_images), np.array(train_labels), np.array(test_images), np.array(test_labels)
 
 
 def Bern(p):
@@ -111,7 +125,7 @@ def _generate_dataset(datadir):
 
 
 def generate_dataset(cachefile='data/decoy-mnist.npz'):
-    if cachefile and os.path.exists(cachefile):
+    if cachefile and False and os.path.exists(cachefile):
         cache = np.load(cachefile)
         data = tuple([cache[f] for f in sorted(cache.files)])
     else:
@@ -160,7 +174,7 @@ def load_hypothesis(
     xml_files,
     normalize=False
 ):
-    A = np.zeros(mask_shape).astype(bool)
+    A = np.ones(mask_shape).astype(bool)
     affected_indices = []
 
     for filepath in xml_files:
@@ -189,8 +203,8 @@ if __name__ == '__main__':
         lambda x: os.path.join(dirname, x),
         xml_files
     ))
-    indices, hypothesis = load_hypothesis(X.shape, xml_files[:30])
-    hypothesis.weight = 10000000
+    indices, hypothesis = load_hypothesis(X.shape, xml_files)
+    hypothesis.weight = 2000
 
     def score_model(mlp):
         print('Train: {0}, Test: {1}'.format(
@@ -202,7 +216,7 @@ if __name__ == '__main__':
     else:
         f0 = MultilayerPerceptron()
         f0.fit(X, y, hypothesis=hypothesis,
-               num_epochs=16, always_include=indices, verbose=True)
+               num_epochs=8, always_include=indices, verbose=True)
         pickle.dump(f0, open('models/1.pkl', 'wb'))
     score_model(f0)
 

@@ -164,12 +164,16 @@ class MultilayerPerceptron:
             yi = y[idx]
             if hypothesis is not None:
                 A = hypothesis.A
+                A_inverse = hypothesis.A_inverse
             else:
                 A = np.ones_like(inputs).astype(bool)
+                A_inverse = np.zeros_like(ones_like(inputs)).astype(bool)
             Ai = A[idx]
+            Ai_inverse = A_inverse[idx]
 
             if always_include is not None:
                 Ai = np.vstack((A[always_include], Ai))
+                Ai_inverse = np.vstack((A_inverse[always_include], Ai_inverse))
                 Xi = np.vstack((X[always_include], Xi))
                 yi = np.vstack((y[always_include], yi))
 
@@ -181,21 +185,26 @@ class MultilayerPerceptron:
             crossentropy = - \
                 np.sum(feed_forward(params, Xi, nonlinearity) * yi) / lenX
             if hypothesis is not None:
-                norm = l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
-                if norm == 0:
-                    norm = 0.00001
-                rightreasons = hypothesis.weight / norm
+                norm_right = l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai])
+                if norm_right == 0:
+                    norm_right = 0.00001
+                rightreasons = hypothesis.weight / norm_right
+                norm_wrong = l2_norm(input_gradients(params, **input_grad_kwargs)(Xi)[Ai_inverse])
+                wrongreasons = 5 * norm_wrong
             else:
                 rightreasons = 0 * \
                     l2_norm(input_gradients(
                         params, **input_grad_kwargs)(Xi)[Ai])
+                wrongreasons = 0 * \
+                    l2_norm(input_gradients(
+                        params, **input_grad_kwargs)(Xi)[Ai_inverse])
             smallparams = self.l2_params * l2_norm(params)
 
             if iteration % show_progress_every == 0 and verbose:
-                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}, smallparams={}'.format(
-                    iteration, crossentropy._value, rightreasons._value, smallparams._value))
+                sys.stdout.write('Iteration={}, crossentropy={}, rightreasons={}, wrongreasons={}'.format(
+                    iteration, crossentropy._value, rightreasons._value, wrongreasons._value))
                 sys.stdout.flush()
-            return crossentropy + rightreasons + smallparams
+            return crossentropy + rightreasons + wrongreasons + smallparams
 
         self.params = adam(grad(objective), params,
                            step_size=step_size, num_iters=num_epochs * num_batches)
