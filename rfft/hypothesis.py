@@ -42,6 +42,15 @@ class Hypothesis(object):
                              increment=5,
                              shuffle=True,
                              **hypothesis_params):
+    """Return an iterator of hypotheses in which more annotations are sampled in each iteration.
+    
+    Args:
+        annotations: List of paths of all annotations.
+        hypothesis_load_fn: A function that takes in the mask shape, list of annotations and hypothesis params, and returns a Hypothesis object.
+        mask_shape: Mask shape passed to hypothesis_load_fn.
+        increment: Number of annotations added in each iteration.
+        shuffle: If True, shuffles the list of annotations before sampling.
+    """
         if shuffle:
             random.shuffle(annotations)
         for i in range(0, len(annotations) + 1, increment):

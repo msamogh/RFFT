@@ -18,7 +18,7 @@ except ImportError:
 
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
-from parse import get_image_mask
+from parse import get_image_mask_from_xml
 
 
 def download_mnist(datadir):
@@ -149,7 +149,7 @@ def load_hypothesis(
 
     for filepath in xml_files:
         index = int(filepath.split('/')[-1].split('.')[0])
-        mask = get_image_mask(filepath, (28, 28)).flatten()
+        mask = get_image_mask_from_xml(filepath, (28, 28)).flatten()
 
         affected_indices.append(index)
         A[index] = mask
