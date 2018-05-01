@@ -55,8 +55,7 @@ class Hypothesis(object):
             increment: Number of annotations added in each iteration.
             shuffle: If True, shuffles the list of annotations before sampling.
         """
-    
-    if shuffle:
-        random.shuffle(annotations)
-    for i in range(0, len(annotations) + 1, increment):
-        yield hypothesis_load_fn(mask_shape, annotations[:i], **hypothesis_params)
+        if shuffle:
+            random.shuffle(annotations)
+        for i in range(0, len(annotations) + 1, increment):
+            yield hypothesis_load_fn(mask_shape, annotations[:i], **hypothesis_params)
