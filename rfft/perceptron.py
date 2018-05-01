@@ -1,7 +1,10 @@
+from abc import ABCMeta
+from abc import abstractmethod
+
 import numpy as np
 
 
-class Perceptron(object):
+class Perceptron(metaclass=ABCMeta):
     """Base class for perceptrons."""
     
     def grad_explain(self, X, **kwargs):
@@ -12,6 +15,22 @@ class Perceptron(object):
     def largest_gradient_mask(self, X, cutoff=0.67, **kwargs):
         grads = self.input_gradients(X, **kwargs)
         return np.array([np.abs(g) > cutoff * np.abs(g).max() for g in grads])
+
+    @abstractmethod
+    def fit(self, *args):
+        pass
+
+    @abstractmethod
+    def score(self, *args):
+        pass
+
+    @abstractmethod
+    def predict(self, *args):
+        pass
+
+    @abstractmethod
+    def predict_proba(self, *args):
+        pass
 
 
 def one_hot(y):
