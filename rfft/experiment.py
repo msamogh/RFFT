@@ -5,17 +5,29 @@ from abc import abstractmethod
 class Experiment(metaclass=ABCMeta):
     
     @abstractmethod
-    def load_data(self):
+    def generate_dataset(self, *args):
         pass
     
     @abstractmethod
-    def load_hypothesis(self):
+    def load_annotations(self, *args):
         pass
     
     @abstractmethod
-    def train(self):
+    def clear_annotations(self, *args):
         pass
     
     @abstractmethod
-    def explain(self):
+    def add_annotation(self, *args):
+        pass
+    
+    @abstractmethod
+    def train(self, *args):
+        pass
+    
+    @abstractmethod
+    def score_model(self, *args):
+        pass
+    
+    @abstractmethod
+    def explain(self, *args):
         pass
