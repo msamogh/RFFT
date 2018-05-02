@@ -1,0 +1,26 @@
+<annotation>
+	<folder>decoy_mnist</folder>
+	<filename>26013.png</filename>
+	<path>/home/atithi/lime/rrr/examples/image/tagging/decoy_mnist/26013.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>28</width>
+		<height>28</height>
+		<depth>1</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>number</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2</xmin>
+			<ymin>3</ymin>
+			<xmax>25</xmax>
+			<ymax>25</ymax>
+		</bndbox>
+	</object>
+</annotation>

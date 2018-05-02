@@ -17,16 +17,19 @@ try:
 except ImportError:
     from urllib import urlopen
 
-from rfft.experiment import Experiment, IMAGE
+from rfft.experiment import Experiment, ExperimentStatus, ExperimentType
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
-from parse import get_image_mask_from_xml
+from rfft.applications.parse import get_image_mask_from_xml
 
 
 class DecoyMNIST(Experiment):
 
     def domain(self):
-        return IMAGE
+        return ExperimentType.IMAGE
+
+    def status(self):
+        return self.status
     
     def generate_dataset(self, cachefile='data/decoy-mnist.npz'):
         if cachefile and os.path.exists(cachefile):
@@ -37,6 +40,7 @@ class DecoyMNIST(Experiment):
             if cachefile:
                 np.savez(cachefile, *data)
         self.Xr, self.X, self.y, self.E, self.Xtr, self.Xt, self.yt, self.Et = data
+        self.status = ExperimentStatus.DATASET_GENERATED
     
     def load_annotations(self, dirname='tagging/decoy_mnist', **hypothesis_params):
         xml_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.xml')]
@@ -51,11 +55,18 @@ class DecoyMNIST(Experiment):
             A[index] = mask
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
+        self.status = ExperimentStatus.ANNOTATIONS_LOADED
 
     def clear_annotations(self):
         self.hypothesis = None
     
-    def add_annotation(self, annotation):
+    def set_annotation(self, idx, annotation):
+        pass
+
+    def get_annotation(self, idx):
+        pass
+
+    def delete_annotation(self, idx):
         pass
     
     def train(self, num_epochs=6):
@@ -65,6 +76,7 @@ class DecoyMNIST(Experiment):
                        hypothesis=self.hypothesis,
                        num_epochs=num_epochs,
                        always_include=self.affected_indices)
+        self.status = ExperimentStatus.TRAINED
 
     def explain(self, sample):
         pass
