@@ -28,7 +28,9 @@ class App extends React.Component {
     return (
       <div className="App">
         <NavigationBar onClick={this.onNavigationClick}/>
-        {this.renderBody()}
+        <div className="App-body-card">
+          {this.renderBody()}
+        </div>
       </div>
     );
   }
