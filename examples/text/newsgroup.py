@@ -125,6 +125,7 @@ if __name__ == '__main__':
     news = NewsGroup()
     news.generate_dataset()
     #news.generate_tagging_set()
+    
     news.load_annotations(weight=10, per_annotation=True)
     news.train(num_epochs=1)
 
