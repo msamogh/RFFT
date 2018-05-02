@@ -17,16 +17,13 @@ try:
 except ImportError:
     from urllib import urlopen
 
-from rfft.experiment import Experiment, IMAGE
+from rfft.experiment import Experiment
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 from parse import get_image_mask_from_xml
 
 
 class DecoyMNIST(Experiment):
-
-    def domain(self):
-        return IMAGE
     
     def generate_dataset(self, cachefile='data/decoy-mnist.npz'):
         if cachefile and os.path.exists(cachefile):

@@ -1,8 +1,17 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
+# Experiment types
+IMAGE = 1
+TEXT = 2
+TABULAR = 3
+
 
 class Experiment(metaclass=ABCMeta):
+
+    @abstractmethod
+    def domain(self):
+        pass
     
     @abstractmethod
     def generate_dataset(self, *args):
