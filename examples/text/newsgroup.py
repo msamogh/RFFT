@@ -25,12 +25,12 @@ from parse import get_text_mask
 
 
 
-class NewsGroup():
+class NewsGroup(Experiment):
     """docstring for NewsGroup"""
-    def __init__(self):
-        super(NewsGroup, self).__init__()
-        pass
-        
+    def domain():
+        return 2 #TEXT   import not working
+
+
     def generate_dataset(self):
         ATHEISM = 'alt.atheism'
         CHRISTIANITY = 'soc.religion.christian'
@@ -42,54 +42,91 @@ class NewsGroup():
         vectorizer = sklearn.feature_extraction.text.TfidfVectorizer(lowercase=False)
         train_vectors = vectorizer.fit_transform(newsgroups_train.data).toarray()
         test_vectors = vectorizer.transform(newsgroups_test.data).toarray()
-        return vectorizer,train_vectors,test_vectors
+        self.newsgroups_train = newsgroups_train
+        self.newsgroups_test = newsgroups_test
+        self.vectorizer = vectorizer
+        self.train_vectors = train_vectors
+        self.test_vectors = test_vectors
+        #return vectorizer,train_vectors,test_vectors
 
 
-    def load_hypothesis(self,
-        vectorizer,
-        annotations_map_file='annotations',
-        text_files_base_dir='../text_tagger/Newsgroup-20'
-    ):
-        annotations_map = json.load(open(annotations_map_file, 'r'))
-        text_files = [x for x in os.listdir(text_files_base_dir) if x.endswith('.txt')]
+    def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
+        txt_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.txt')]
+        A = np.zeros(self.train_vectors.shape).astype(bool)
+        affected_indices = []
+        
+        for filepath in txt_files:
+            index = int(filepath.split('/')[-1].split('.')[0])
+            file_content = open(filepath).read()
+            original_file_content = self.newsgroups_train.data[index]
+            
+            original_feature = self.train_vectors[index]
+            file_feature = self.vectorizer.transform([file_content]).toarray()
+            file_feature = np.squeeze(file_feature)
 
-        A = np.zeros_like(len(vectorizer.vocabulary_)).astype(bool)
-        for file in text_files:
-            if file not in annotations_map:
-                continue
-            target = ATHEISM if ATHEISM in file else CHRISTIANITY
-            index = int(file[file.index(target) + len(target):file.rindex('.')])
-            A[index] = get_text_mask(
-                vectorizer=vectorizer,
-                annotations_map=annotations_map,
-                text_files_base_dir=text_files_base_dir,
-                text_filename=file
-            )
-        return A
+            mask_indices = []
+            mask = np.ones(self.train_vectors.shape[1], dtype='uint8') 
+            for i in range(len(file_feature)):
+                if file_feature[i] != original_feature[i]:
+                    mask_indices.append(i)
+            for m in mask_indices:
+                mask[m] = 0
 
+        A[index] = mask 
+        affected_indices.append(index)
+        self.affected_indices = affected_indices
+        self.hypothesis = Hypothesis(A, **hypothesis_params)
+
+    def clear_annotations(self):
+        self.hypothesis = None
+
+    def add_annotation(self, annotation):
+        pass
+
+
+    def train(self, num_epochs=6):
+        self.model = MultilayerPerceptron()
+        self.model.fit(self.train_vectors,
+                       self.test_vectors,
+                       hypothesis=self.hypothesis,
+                       num_epochs=num_epochs,
+                       always_include=self.affected_indices)
+
+    def explain(self, sample):
+        pass
+    
+    def score_model(self):
+        print('Train: {0}, Test: {1}'.format(
+            self.model.score(self.X, self.y), self.model.score(self.Xt, self.yt)))
 
     
     def save_to_text_file(self, file_id):
         if not os.path.exists('tagging'):
             os.mkdir('tagging')
-        with open('tagging/'+str(file_id)+'.txt','w') as fout:
-            fout.write(newsgroups_train.data[file_id])
+        if not os.path.exists('tagging/newsgroup'):
+            os.mkdir('tagging/newsgroup')
+
+        with open('tagging/newsgroup/'+str(file_id)+'.txt','w') as fout:
+            fout.write(self.newsgroups_train.data[file_id])
         
 
 
-    def generate_tagging_set(self, Xtr, size=20):
+    def generate_tagging_set(self, size=20):
         indices = []
         for i in range(size):
-            index = random.randint(0, len(Xtr))
+            index = random.randint(0, len(self.train_vectors))
             if index in indices:
                 continue
             indices.append(index)
             self.save_to_text_file(index)
 
-
-news = NewsGroup()
-vectorizer,train_vectors,test_vectors = news.generate_dataset()
-news.generate_tagging_set(train_vectors)
+if __name__ == '__main__':
+    print('Training with annotations')
+    news = NewsGroup()
+    news.generate_dataset()
+    #news.generate_tagging_set()
+    news.load_annotations(weight=10, per_annotation=True)
+    news.train(num_epochs=1)
 
 """
 
