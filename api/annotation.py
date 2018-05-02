@@ -19,7 +19,6 @@ class Annotation(Resource):
             return str(ex), 500
         return 'Annotation added.', 200
 
-
     def get(self, experiment_name, sample_idx):
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
@@ -29,7 +28,6 @@ class Annotation(Resource):
             return str(ke), 400
         except Exception as ex:
             return str(ex), 500
-
 
     def delete(self, experiment_name, sample_idx):
         try:
