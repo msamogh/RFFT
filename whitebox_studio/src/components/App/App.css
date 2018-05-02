@@ -6,4 +6,13 @@ Body {
   display: flex;
   flex-direction: row;
   height: 100vh;
+  background-color: grey;
+}
+
+.App-body-card {
+  margin: 1%;
+  background-color: white;
+  padding: 1%;
+  box-shadow: blue;
+  flex-grow: 1;
 }
