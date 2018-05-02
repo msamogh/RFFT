@@ -12,6 +12,8 @@ class Train(Resource):
             num_epochs = int(req_json['num_epochs'])
             experiment = ExperimentCache().get_experiment(experiment_name)
             experiment.train(num_epochs=num_epochs)
+        except ValueError as ve:
+            return 'num_epochs should be an integer.', 400
         except KeyError as ke:
             return str(ke), 400
         except Exception as ex:
