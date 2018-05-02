@@ -21,7 +21,7 @@ class DrawCanvas extends React.Component {
       simplifyThreshold: 50,
       height: 0,
       width: 0,
-      uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cephalometric_radiograph.JPG/600px-Cephalometric_radiograph.JPG'
+      uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cephalometric_radiograph.JPG/600px-Cephalometric_radiograph.JPG',
     };
   }
 
@@ -34,23 +34,23 @@ class DrawCanvas extends React.Component {
     const rect = node.getBoundingClientRect();
     const { left, top } = rect;
     this.setState({ top, left });
-    node.ondragstart = function() { return false; };
+    node.ondragstart = function () { return false; };
 
     this.getNextImage();
   }
 
-  getMeta = (url) => {   
-    var img = new Image();
-    img.addEventListener("load", () => {
-      this.setState({width: img.naturalWidth, height: img.naturalHeight});
+  getMeta = (url) => {
+    let img = new Image();
+    img.addEventListener('load', () => {
+      this.setState({ width: img.naturalWidth, height: img.naturalHeight });
       const node = ReactDOM.findDOMNode(this.refs.canvas);
       const rect = node.getBoundingClientRect();
       const { left, top } = rect;
       this.setState({ top, left });
-      //alert( img.naturalWidth +' '+ img.naturalHeight );
+      // alert( img.naturalWidth +' '+ img.naturalHeight );
     });
     img.src = url;
-}
+  }
 
   handleMouseDown() {
     if (!this.state.isDrawing) {
@@ -77,7 +77,7 @@ class DrawCanvas extends React.Component {
       this.setState({ isDrawing: false });
       const node = ReactDOM.findDOMNode(this.refs.canvas);
       saveSvgAsPng.svgAsPngUri(node, {}, (uri) => {
-        this.setState({uri, paths: [[]]});
+        this.setState({ uri, paths: [[]] });
       });
     }
   }
@@ -92,16 +92,16 @@ class DrawCanvas extends React.Component {
 
   save = () => {
     const node = ReactDOM.findDOMNode(this.refs.canvas);
-    //saveSvgAsPng.saveSvgAsPng(node, 'diagram.png');
+    // saveSvgAsPng.saveSvgAsPng(node, 'diagram.png');
     saveSvgAsPng.svgAsPngUri(node, {}, (uri) => {
-      this.setState({uri});
+      this.setState({ uri });
       console.log(uri);
       this.getMask();
     });
   }
 
   getMask = () => {
-    const {height, width} = this.state;
+    const { height, width } = this.state;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -116,7 +116,7 @@ class DrawCanvas extends React.Component {
         imageToMat[row] = [];
         // imageToMat[row][col] = 'rgba(' + imageData[++count] + ', ' + imageData[++count] + ', ' + imageData[++count] + ', ' + imageData[++count] + ')';
         for (let col = 0; col < height; col++) {
-          //TODO use dynamic mask colour
+          // TODO use dynamic mask colour
           if (imageData[++count] === 0 && imageData[++count] === 0 && imageData[++count] === 255 && imageData[++count] === 255) {
             imageToMat[row][col] = 1;
           } else {
@@ -125,21 +125,21 @@ class DrawCanvas extends React.Component {
         }
       }
       console.log(imageToMat);
-      //TODO fetch post mask here.
-    }
-    img.src = this.state.uri;  
+      // TODO fetch post mask here.
+    };
+    img.src = this.state.uri;
   }
 
   getNextImage = () => {
-    //TODO get new image
+    // TODO get new image
   }
 
   done = () => {
-    //TODO send done message
+    // TODO send done message
   }
 
   render() {
-    const {height, width} = this.state;
+    const { height, width } = this.state;
     const paths = this.state.paths.map((_points) => {
       let path = '';
       const points = _points.slice(0);
@@ -181,7 +181,7 @@ class DrawCanvas extends React.Component {
               />))
             }
           </svg>
-          <input type="range" min="0" max="100" value={this.state.simplifyThreshold} step="10" orient="vertical" onChange={this.setThreshold.bind(this)} />
+          <input type="range" min="10" max="100" value={this.state.simplifyThreshold} step="10" orient="vertical" onChange={this.setThreshold.bind(this)} />
           <h2>{this.state.simplifyThreshold}</h2>
         </div>
         <div className="MaskingCanvas-button-container">
