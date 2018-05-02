@@ -16,7 +16,6 @@ class BaseSingleton(type):
         return cls.instance
 
 
-
 class ExperimentCache(metaclass=BaseSingleton):
 
     def __init__(self):
