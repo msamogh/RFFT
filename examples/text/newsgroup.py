@@ -17,7 +17,7 @@ import random
 from lime import lime_text
 from lime.lime_text import LimeTextExplainer
 
-from rfft.experiment import Experiment, ExperimentType
+from rfft.experiment import Experiment, ExperimentType, ExperimentStatus
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 
@@ -47,6 +47,7 @@ class NewsGroup(Experiment):
         self.newsgroups_test = newsgroups_test
         self.vectorizer = vectorizer
         self.X, self.y, self.Xt, self.yt = train_vectors, newsgroups_train.target, test_vectors, newsgroups_test.target
+        self.status.dataset_generated = True
 
 
     def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
@@ -76,12 +77,11 @@ class NewsGroup(Experiment):
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
+        self.status.annotations_loaded = True
 
     def clear_annotations(self):
         self.hypothesis = None
-
-    def add_annotation(self, annotation):
-        pass
+        self.status.annotations_loaded = False
 
     def delete_annotation(self, idx):
         pass
