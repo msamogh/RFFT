@@ -40,7 +40,7 @@ class DecoyMNIST(Experiment):
             if cachefile:
                 np.savez(cachefile, *data)
         self.Xr, self.X, self.y, self.E, self.Xtr, self.Xt, self.yt, self.Et = data
-        self.status = ExperimentStatus.DATASET_GENERATED
+        self.status.dataset_generated = True
     
     def load_annotations(self, dirname='tagging/decoy_mnist', **hypothesis_params):
         xml_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.xml')]
@@ -55,7 +55,7 @@ class DecoyMNIST(Experiment):
             A[index] = mask
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
-        self.status = ExperimentStatus.ANNOTATIONS_LOADED
+        self.status.annotations_loaded = True
 
     def clear_annotations(self):
         self.hypothesis = None
@@ -76,7 +76,7 @@ class DecoyMNIST(Experiment):
                        hypothesis=self.hypothesis,
                        num_epochs=num_epochs,
                        always_include=self.affected_indices)
-        self.status = ExperimentStatus.TRAINED
+        self.status.trained = True
 
     def explain(self, sample):
         pass
