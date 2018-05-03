@@ -18,8 +18,7 @@ class ExperimentStatus(Enum):
 
 
 class Experiment(metaclass=ABCMeta):
-    """Represents an experiment.
-    """
+    """Represents an experiment."""
 
     def __init__(self):
         self.status = ExperimentStatus.INITIALIZED
