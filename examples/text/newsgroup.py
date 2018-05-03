@@ -64,14 +64,12 @@ class NewsGroup(Experiment):
             original_feature = self.X[index]
             file_feature = self.vectorizer.transform([file_content]).toarray()
             file_feature = np.squeeze(file_feature)
-
             mask_indices = []
             mask = np.ones(self.X.shape[1], dtype='uint8') 
             for i in range(len(original_feature)):
                 if file_feature[i] != original_feature[i]:
                     mask_indices.append(i)
             mask[mask_indices] = 0
-
             A[index] = mask
             affected_indices.append(index)
 
