@@ -17,7 +17,7 @@ import random
 from lime import lime_text
 from lime.lime_text import LimeTextExplainer
 
-from rfft.experiment import Experiment
+from rfft.experiment import Experiment, ExperimentType, ExperimentStatus
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 
@@ -27,8 +27,9 @@ from parse import get_text_mask
 
 class NewsGroup(Experiment):
     """docstring for NewsGroup"""
+
     def domain():
-        return 2 #TEXT   import not working
+        return ExperimentType.TEXT
 
 
     def generate_dataset(self):
@@ -45,49 +46,60 @@ class NewsGroup(Experiment):
         self.newsgroups_train = newsgroups_train
         self.newsgroups_test = newsgroups_test
         self.vectorizer = vectorizer
-        self.train_vectors = train_vectors
-        self.test_vectors = test_vectors
-        #return vectorizer,train_vectors,test_vectors
+        self.X, self.y, self.Xt, self.yt = train_vectors, newsgroups_train.target, test_vectors, newsgroups_test.target
+        self.status.dataset_generated = True
 
 
     def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
         txt_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.txt')]
-        A = np.zeros(self.train_vectors.shape).astype(bool)
+
+        A = np.zeros(self.X.shape).astype(bool)
         affected_indices = []
         
         for filepath in txt_files:
             index = int(filepath.split('/')[-1].split('.')[0])
-            file_content = open(filepath).read()
+            file_content = open(filepath, 'rb').read()
             original_file_content = self.newsgroups_train.data[index]
             
-            original_feature = self.train_vectors[index]
+            original_feature = self.X[index]
             file_feature = self.vectorizer.transform([file_content]).toarray()
             file_feature = np.squeeze(file_feature)
 
             mask_indices = []
-            mask = np.ones(self.train_vectors.shape[1], dtype='uint8') 
-            for i in range(len(file_feature)):
+            mask = np.ones(self.X.shape[1], dtype='uint8') 
+            for i in range(len(original_feature)):
                 if file_feature[i] != original_feature[i]:
                     mask_indices.append(i)
-            for m in mask_indices:
-                mask[m] = 0
+            mask[mask_indices] = 0
 
-        A[index] = mask 
-        affected_indices.append(index)
+            A[index] = mask
+            affected_indices.append(index)
+
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
+        self.status.annotations_loaded = True
 
     def clear_annotations(self):
         self.hypothesis = None
+        self.status.annotations_loaded = False
 
-    def add_annotation(self, annotation):
+    def delete_annotation(self, idx):
         pass
+
+    def get_annotation(self, idx):
+        pass
+
+    def set_annotation(self, idx):
+        pass
+
+    def status(self):
+        return self.status
 
 
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
-        self.model.fit(self.train_vectors,
-                       self.test_vectors,
+        self.model.fit(self.X,
+                       self.y,
                        hypothesis=self.hypothesis,
                        num_epochs=num_epochs,
                        always_include=self.affected_indices)
@@ -114,7 +126,7 @@ class NewsGroup(Experiment):
     def generate_tagging_set(self, size=20):
         indices = []
         for i in range(size):
-            index = random.randint(0, len(self.train_vectors))
+            index = random.randint(0, len(self.X))
             if index in indices:
                 continue
             indices.append(index)
