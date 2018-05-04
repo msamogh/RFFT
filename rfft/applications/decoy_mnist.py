@@ -23,14 +23,20 @@ from rfft.hypothesis import Hypothesis
 from rfft.applications.parse import get_image_mask_from_xml
 
 
+ANNOTATIONS_DIR = 'tagging/decoy_mnist'
+
+
 class DecoyMNIST(Experiment):
+
+
+    def get_status(self):
+        return self.status
+
 
     def domain(self):
         return ExperimentType.IMAGE
 
-    def status(self):
-        return self.status
-    
+
     def generate_dataset(self, cachefile='data/decoy-mnist.npz'):
         if cachefile and os.path.exists(cachefile):
             cache = np.load(cachefile)
@@ -41,33 +47,49 @@ class DecoyMNIST(Experiment):
                 np.savez(cachefile, *data)
         self.Xr, self.X, self.y, self.E, self.Xtr, self.Xt, self.yt, self.Et = data
         self.status.dataset_generated = True
-    
-    def load_annotations(self, dirname='tagging/decoy_mnist', **hypothesis_params):
-        xml_files = [os.path.join(dirname, x) for x in os.listdir(dirname) if x.endswith('.xml')]
+
+
+    def load_annotations(self, **hypothesis_params):
+        annotation_files = [os.path.join(ANNOTATIONS_DIR, x)
+                            for x in os.listdir(ANNOTATIONS_DIR)
+                            if x.endswith('.npy')]
+
         A = np.zeros(self.X.shape).astype(bool)
         affected_indices = []
-        
-        for filepath in xml_files:
-            index = int(filepath.split('/')[-1].split('.')[0])
-            mask = get_image_mask_from_xml(filepath, (28, 28)).flatten()
-            
+        for f in annotation_files:
+            index = int(f.split('/')[-1].split('.')[0])
+            mask = np.load(f)
             affected_indices.append(index)
             A[index] = mask
+
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
         self.status.annotations_loaded = True
 
-    def clear_annotations(self):
+
+    def unload_annotations(self):
         self.hypothesis = None
-    
-    def set_annotation(self, idx, annotation):
-        pass
+        self.status.annotations_loaded = False
+
+
+    def set_annotation(self, idx, annotation_json):
+        value = annotation_json['value']
+        indices = annotation_json['indices']
+        length = annotation_json['length']
+
+        initializer = {0: np.ones, 1: np.zeros}
+        mask = initializer[value](length, dtype='uint8')
+        mask[indices] = int(not value)
+        np.save(os.path.join(ANNOTATIONS_DIR, str(idx)), mask)
+
 
     def get_annotation(self, idx):
         pass
 
+
     def delete_annotation(self, idx):
         pass
+
     
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
@@ -78,8 +100,10 @@ class DecoyMNIST(Experiment):
                        always_include=self.affected_indices)
         self.status.trained = True
 
+
     def explain(self, sample):
         pass
+
     
     def score_model(self):
         print('Train: {0}, Test: {1}'.format(
@@ -122,10 +146,12 @@ class DecoyMNIST(Experiment):
             datadir, 't10k-labels-idx1-ubyte.gz'))
         
         return train_images, train_labels, test_images, test_labels
-    
+
+
     def Bern(self, p):
         return np.random.rand() < p
-    
+
+
     def augment(self, image, digit, randomize=False, mult=25, all_digits=range(10)):
         if randomize:
             return self.augment(image, np.random.choice(all_digits))
@@ -143,7 +169,8 @@ class DecoyMNIST(Experiment):
                 expl[i][j] = 1
         
         return img.ravel(), expl.astype(bool).ravel()
-    
+
+
     def _generate_dataset(self, datadir):
         X_raw, y, Xt_raw, yt = self.download_mnist(datadir)
         all_digits = list(set(y))
@@ -171,14 +198,16 @@ class DecoyMNIST(Experiment):
         Xtr = np.array([x.ravel() for x in Xt_raw])
         
         return Xr, X, y, E, Xtr, Xt, yt, Et
-    
+
+
     def save_image_to_file(self, array, file_id, show=False):
         img = array.reshape((28, 28))
         img = Image.fromarray(img)
         img.save('tagging/decoy_mnist/' + str(file_id) + '.png')
         if show:
             img.show()
-    
+
+
     def generate_tagging_set(self, Xtr, size=20):
         indices = []
         for i in range(size):
@@ -198,6 +227,6 @@ if __name__ == '__main__':
     decoy_mnist.score_model()
 
     print('Training without annotations')
-    decoy_mnist.clear_annotations()
+    decoy_mnist.unload_annotations()
     decoy_mnist.train(num_epochs=2)
     decoy_mnist.score_model()

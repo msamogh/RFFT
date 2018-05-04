@@ -11,18 +11,19 @@ class ExperimentType(Enum):
     TABULAR = 3
 
 
-ExperimentStatus = namedtuple('ExperimentStatus', ['dataset_generated',
-                                                   'annotations_loaded',
-                                                   'trained'])
+class ExperimentStatus(object):
+
+    def __init__(self, dataset_generated=False, annotations_loaded=False, trained=False):
+        self.dataset_generated = dataset_generated
+        self.annotations_loaded = annotations_loaded
+        self.trained = trained
 
 
 class Experiment(metaclass=ABCMeta):
     """Represents an experiment."""
 
     def __init__(self):
-        self.status = ExperimentStatus(dataset_generated=False,
-                                       annotations_loaded=False,
-                                       trained=False)
+        self.status = ExperimentStatus()
 
     @abstractmethod
     def domain(self):
@@ -32,7 +33,7 @@ class Experiment(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def status(self):
+    def get_status(self):
         """Returns the current state of the experiment.
         The values can take on any of the values from ExperimentStatus.
         """
@@ -49,7 +50,7 @@ class Experiment(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def clear_annotations(self):
+    def unload_annotations(self):
         """Removes any loaded annotations from the state."""
         pass
 
