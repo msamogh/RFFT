@@ -77,7 +77,7 @@ class NewsGroup(Experiment):
         self.hypothesis = Hypothesis(A, **hypothesis_params)
         self.status.annotations_loaded = True
 
-    def clear_annotations(self):
+    def unload_annotations(self):
         self.hypothesis = None
         self.status.annotations_loaded = False
 
@@ -90,7 +90,7 @@ class NewsGroup(Experiment):
     def set_annotation(self, idx):
         pass
 
-    def status(self):
+    def get_status(self):
         return self.status
 
 
