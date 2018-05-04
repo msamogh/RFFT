@@ -21,7 +21,7 @@ from lime import lime_image
 from skimage.segmentation import mark_boundaries
 
 from rfft.experiment import Experiment
-from rfft.experiment ExperimentStatus
+from rfft.experiment import ExperimentStatus
 from rfft.experiment import ExperimentType
 from rfft.experiment import Dataset
 
