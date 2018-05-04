@@ -75,10 +75,10 @@ class NewsGroup(Experiment):
         
         #Mitigate tf-idf effects 
         
-        for i in range(self.X.shape[0]):
-            for j in range(self.X.shape[1]):
-                if j in mask_indices:
-                    A[i][j] = 0 
+        # for i in range(self.X.shape[0]):
+        #     for j in range(self.X.shape[1]):
+        #         if j in mask_indices:
+        #             A[i][j] = 0 
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)

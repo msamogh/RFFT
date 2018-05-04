@@ -11,6 +11,11 @@ class ExperimentType(Enum):
     TABULAR = 3
 
 
+class Dataset(Enum):
+    TRAIN = 1
+    TEST = 2
+
+
 class ExperimentStatus(object):
 
     def __init__(self, dataset_generated=False, annotations_loaded=False, trained=False):
@@ -42,6 +47,11 @@ class Experiment(metaclass=ABCMeta):
     @abstractmethod
     def generate_dataset(self):
         """Loads and preprocesses the dataset."""
+        pass
+
+    @abstractmethod
+    def get_sample(self, dataset, sample_idx):
+        """Returns the input sample from the train dataset."""
         pass
 
     @abstractmethod
@@ -80,6 +90,6 @@ class Experiment(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def explain(self, sample):
+    def explain(self, sample, **experiment_params):
         """Explains the reasons for the prediction of the given input sample."""
         pass
