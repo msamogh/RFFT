@@ -17,8 +17,8 @@ try:
 except ImportError:
     from urllib import urlopen
 
-from lime import lime_image
-from skimage.segmentation import mark_boundaries
+# from lime import lime_image
+# from skimage.segmentation import mark_boundaries
 
 from rfft.experiment import Experiment
 from rfft.experiment import ExperimentStatus

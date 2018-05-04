@@ -17,7 +17,11 @@ import random
 from lime import lime_text
 from lime.lime_text import LimeTextExplainer
 
-from rfft.experiment import Experiment, ExperimentType, ExperimentStatus
+from rfft.experiment import Experiment
+from rfft.experiment import ExperimentStatus
+from rfft.experiment import ExperimentType
+from rfft.experiment import Dataset
+
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 
@@ -48,6 +52,15 @@ class NewsGroup(Experiment):
         self.vectorizer = vectorizer
         self.X, self.y, self.Xt, self.yt = train_vectors, newsgroups_train.target, test_vectors, newsgroups_test.target
         self.status.dataset_generated = True
+
+
+    def get_sample(dataset, idx):
+        if not self.status.dataset_generated:
+            raise AttributeError('Generate dataset before fetching samples.')
+        if dataset == Dataset.TRAIN:
+            return self.newsgroups_train.data[idx]
+        elif dataset == Dataset.TEST:
+            return self.newsgroups_test.data[idx]
 
 
     def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
