@@ -5,7 +5,7 @@ import sklearn.ensemble
 import sklearn.metrics
 
 import sys
-sys.path.append('../../autograd/')
+#sys.path.append('../../autograd/')
 
 from sklearn.pipeline import make_pipeline
 from sklearn.datasets import fetch_20newsgroups
@@ -47,7 +47,7 @@ class NewsGroup(Experiment):
         self.newsgroups_test = newsgroups_test
         self.vectorizer = vectorizer
         self.X, self.y, self.Xt, self.yt = train_vectors, newsgroups_train.target, test_vectors, newsgroups_test.target
-        self.status.dataset_generated = True
+        #self.status.dataset_generated = True
 
 
     def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
@@ -68,18 +68,25 @@ class NewsGroup(Experiment):
             mask = np.ones(self.X.shape[1], dtype='uint8') 
             for i in range(len(original_feature)):
                 if file_feature[i] != original_feature[i]:
-                    mask_indices.append(i)
+                    mask_indices.append(i) #words to be ignored
             mask[mask_indices] = 0
             A[index] = mask
             affected_indices.append(index)
+        
+        #Mitigate tf-idf effects 
+        
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[1]):
+                if j in mask_indices:
+                    A[i][j] = 0 
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
-        self.status.annotations_loaded = True
+        #self.status.annotations_loaded = True
 
     def unload_annotations(self):
         self.hypothesis = None
-        self.status.annotations_loaded = False
+        #self.status.annotations_loaded = False
 
     def delete_annotation(self, idx):
         pass
@@ -100,7 +107,8 @@ class NewsGroup(Experiment):
                        self.y,
                        hypothesis=self.hypothesis,
                        num_epochs=num_epochs,
-                       always_include=self.affected_indices)
+                       always_include=self.affected_indices,
+                       show_progress_every = 5)
 
     def explain(self, sample):
         pass
@@ -135,9 +143,18 @@ if __name__ == '__main__':
     news = NewsGroup()
     news.generate_dataset()
     #news.generate_tagging_set()
-    
+
     news.load_annotations(weight=10, per_annotation=True)
-    news.train(num_epochs=1)
+    print ("Our Method")
+    news.train(num_epochs=6)
+    news.score_model()
+
+    print ("Without hypothesis")
+    news.hypothesis = None
+    news.train(num_epochs=6)
+    news.score_model()
+
+    
 
 """
 
