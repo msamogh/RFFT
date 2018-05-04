@@ -17,7 +17,14 @@ try:
 except ImportError:
     from urllib import urlopen
 
-from rfft.experiment import Experiment, ExperimentStatus, ExperimentType
+from lime import lime_image
+from skimage.segmentation import mark_boundaries
+
+from rfft.experiment import Experiment
+from rfft.experiment ExperimentStatus
+from rfft.experiment import ExperimentType
+from rfft.experiment import Dataset
+
 from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
 from rfft.applications.parse import get_image_mask_from_xml
@@ -47,6 +54,15 @@ class DecoyMNIST(Experiment):
                 np.savez(cachefile, *data)
         self.Xr, self.X, self.y, self.E, self.Xtr, self.Xt, self.yt, self.Et = data
         self.status.dataset_generated = True
+
+
+    def get_sample(self, dataset, idx):
+        if not self.status.dataset_generated:
+            raise AttributeError('Generate dataset before fetching samples.')
+        if dataset == Dataset.TRAIN:
+            return Xr[idx]
+        elif dataset == Dataset.TEST:
+            return Xtr[idx]
 
 
     def load_annotations(self, **hypothesis_params):
@@ -84,11 +100,18 @@ class DecoyMNIST(Experiment):
 
 
     def get_annotation(self, idx):
-        pass
+        annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
+        if os.path.exists(annotation_path):
+            return np.load(annotation_path)
+        return None
 
 
     def delete_annotation(self, idx):
-        pass
+        annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
+        try:
+            os.remove(annotation_path)
+        except FileNotFoundError:
+            pass
 
     
     def train(self, num_epochs=6):
@@ -101,13 +124,25 @@ class DecoyMNIST(Experiment):
         self.status.trained = True
 
 
-    def explain(self, sample):
-        pass
+    def explain(self, sample, **explanation_params):
+        if not self.status.trained:
+            raise AttributeError('You must have trained the model to be able to generate explanations.')
+        explainer = lime_image.LimeImageExplainer()
+        explanation = explainer.explain_instance(image,
+                                                 self.model,
+                                                 top_labels=5,
+                                                 hide_color=0,
+                                                 num_samples=1000)
+        temp, mask = explanation.get_image_and_mask(240, positive_only=True, num_features=5, hide_rest=True)
+        masked_image = mark_boundaries(temp / 2 + 0.5, mask)
+        return masked_image
 
     
     def score_model(self):
-        print('Train: {0}, Test: {1}'.format(
-            self.model.score(self.X, self.y), self.model.score(self.Xt, self.yt)))
+        return (
+            self.model.score(self.X, self.y),
+            self.model.score(self.Xt, self.yt)
+        )
     
 
     def download_mnist(self, datadir):
@@ -224,9 +259,9 @@ if __name__ == '__main__':
     decoy_mnist.generate_dataset()
     decoy_mnist.load_annotations(weight=10, per_annotation=True)
     decoy_mnist.train(num_epochs=1)
-    decoy_mnist.score_model()
+    print(decoy_mnist.score_model())
 
     print('Training without annotations')
     decoy_mnist.unload_annotations()
     decoy_mnist.train(num_epochs=2)
-    decoy_mnist.score_model()
+    print(decoy_mnist.score_model())
