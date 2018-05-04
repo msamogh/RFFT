@@ -47,7 +47,7 @@ class NewsGroup(Experiment):
         self.newsgroups_test = newsgroups_test
         self.vectorizer = vectorizer
         self.X, self.y, self.Xt, self.yt = train_vectors, newsgroups_train.target, test_vectors, newsgroups_test.target
-        #self.status.dataset_generated = True
+        self.status.dataset_generated = True
 
 
     def load_annotations(self, dirname='tagging/newsgroup', **hypothesis_params):
@@ -82,11 +82,11 @@ class NewsGroup(Experiment):
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
-        #self.status.annotations_loaded = True
+        self.status.annotations_loaded = True
 
     def unload_annotations(self):
         self.hypothesis = None
-        #self.status.annotations_loaded = False
+        self.status.annotations_loaded = False
 
     def delete_annotation(self, idx):
         pass
