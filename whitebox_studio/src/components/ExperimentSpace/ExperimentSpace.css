@@ -1,0 +1,12 @@
+.ExperimentSpace {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-grow: 1;
+  height: 100%;
+  background-color: #e5e5e5;
+  margin-left: 40px;
+  margin-right: 40px;
+  box-shadow: 0 3px 20px rgba(0,0,0,0.16), 0 3px 20px rgba(0,0,0,0.23);
+
+}

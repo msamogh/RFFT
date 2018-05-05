@@ -4,6 +4,13 @@ Body {
 
 .App {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100vh;
+  background-color: #e5e5e5;
+
+}
+
+.App-body-card {
+  background-color: #e5e5e5;
+  flex-grow: 1;
 }
