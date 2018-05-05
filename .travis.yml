@@ -12,7 +12,8 @@ script:
   - npm install
   - npm run build
   - cp build/index.html ../templates
-  - cp -r build/static ../
+  - cp -rf build/static ../
+  - rm -rf build
   - cd ..
   - ls
 deploy:
