@@ -99,8 +99,9 @@ class DecoyMNIST(Experiment):
 
     def get_annotation(self, idx):
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
+        print(annotation_path)
         if os.path.exists(annotation_path):
-            return np.load(annotation_path)
+            return np.load(annotation_path).tolist()
         return None
 
     def delete_annotation(self, idx):

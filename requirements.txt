@@ -1,6 +1,5 @@
 absl-py==0.1.11
 alembic==0.9.8
-aniso8601==3.0.0
 anytree==2.4.3
 astor==0.6.2
 autograd==1.2
@@ -14,12 +13,13 @@ cycler==0.10.0
 decorator==4.1.2
 entrypoints==0.2.3
 Faker==0.8.12
-Flask==1.0.1
+Flask==1.0.2
 Flask-RESTful==0.3.6
 future==0.16.0
 gast==0.2.0
 grpcio==1.10.0
 grpcio-tools==1.10.0
+gunicorn==19.8.1
 h5py==2.7.1
 html5lib==0.9999999
 idna==2.6
@@ -47,10 +47,8 @@ nbconvert==5.3.1
 nbformat==4.4.0
 networkx==2.1
 notebook==5.4.1
-numexpr==2.6.4
 numpy==1.14.2
 olefile==0.44
-opencv-python==3.4.0.12
 packaging==17.1
 pandas==0.22.0
 pandocfilters==1.4.2

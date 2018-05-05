@@ -1,3 +1,4 @@
+from flask import jsonify
 from flask_restful import request, Resource
 from experiment.experiment_cache import ExperimentCache
 
@@ -23,7 +24,7 @@ class Annotation(Resource):
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
             annotation = experiment.get_annotation(sample_idx)
-            return {'annotation': json.dumps(annotation)}
+            return jsonify({'annotation': annotation})
         except KeyError as ke:
             return str(ke), 400
         except Exception as ex:
