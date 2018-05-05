@@ -2,8 +2,14 @@ os: linux
 dist: trusty
 group: stable
 language: python
-cache: pip
-script: []
+cache:
+  directories:
+    - node_modules
+  - pip
+script:
+  - cd whitebox_studio
+  - npm install
+  - npm run build
 deploy:
   provider: heroku
   api_key:
