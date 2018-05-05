@@ -9,3 +9,5 @@ deploy:
   api_key:
     secure: "ae08d8bd-7fd8-4f63-8cbb-a95d98e0282d"
   app: whitebox-rfft
+  run: "echo Deployed from Travis"
+  strategy: git
