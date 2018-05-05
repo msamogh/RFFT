@@ -3,7 +3,7 @@ dist: trusty
 group: stable
 language: python
 script:
-  - cd msamogh/RFFT/whitebox_studio
+  - cd $TRAVIS_BUILD_DIR/whitebox_studio
   - npm install
   - npm run build
 deploy:
