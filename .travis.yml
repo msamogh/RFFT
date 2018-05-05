@@ -3,10 +3,11 @@ dist: trusty
 group: stable
 language: python
 script:
+  - mkdir templates
   - cd $TRAVIS_BUILD_DIR/whitebox_studio
   - npm install
   - npm run build
-  - cp build/index.html ../
+  - cp build/index.html ../templates
   - cp -r build/static ../
 deploy:
   provider: heroku
