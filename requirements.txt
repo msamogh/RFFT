@@ -1,3 +1,4 @@
+./
 absl-py==0.1.11
 alembic==0.9.8
 anytree==2.4.3
@@ -69,7 +70,6 @@ PyYAML==3.12
 pyzmq==17.0.0
 qtconsole==4.3.1
 requests==2.18.4
-RFFT==0.0.1
 scikit-image==0.13.1
 scikit-learn==0.19.1
 scipy==0.19.1
