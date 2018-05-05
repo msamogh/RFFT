@@ -6,6 +6,8 @@ script:
   - cd $TRAVIS_BUILD_DIR/whitebox_studio
   - npm install
   - npm run build
+  - cp build/index.html ../
+  - cp -r build/static ../
 deploy:
   provider: heroku
   api_key:
