@@ -13,6 +13,8 @@ script:
   - npm run build
   - cp build/index.html ../templates
   - cp -r build/static ../
+  - cd ..
+  - ls
 deploy:
   provider: heroku
   api_key:
