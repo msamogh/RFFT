@@ -5,6 +5,7 @@ language: python
 cache:
   directories:
     - $HOME/virtualenv
+    - $TRAVIS_BUILD_DIR/whitebox_studio/node_modules
 script:
   - mkdir templates
   - cd $TRAVIS_BUILD_DIR/whitebox_studio
