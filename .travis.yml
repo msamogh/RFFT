@@ -2,10 +2,6 @@ os: linux
 dist: trusty
 group: stable
 language: python
-cache:
-  directories:
-    - node_modules
-  - pip
 script:
   - cd whitebox_studio
   - npm install
