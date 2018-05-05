@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 
@@ -20,4 +22,6 @@ def register_endpoints(api):
 
 
 register_endpoints(api)
-app.run(host='0.0.0.0', port=80, debug=True)
+
+port = int(os.environ.get("PORT", 5000))
+app.run(host='0.0.0.0', port=port)
