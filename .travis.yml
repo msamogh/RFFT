@@ -23,3 +23,4 @@ deploy:
   app: whitebox-rfft
   run: "echo Deployed from Travis"
   skip_cleanup: true
+  strategy: git
