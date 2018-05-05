@@ -1,58 +1,63 @@
 import React from 'react';
-import MaskingCanvas from '../MaskingCanvas';
 import './Home.css';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-
-      page: 1,
-    };
-  }
-
-  onOptionClick = (option, value) => () => {
-    const { page } = this.state;
-    this.setState({ [option]: value, page: page + 1 });
-    if (page === 2) {
-      this.props.navigateToMaskingCanvas();
-    }
-  }
-
-  renderBody = () => {
-    switch (this.state.page) {
-      case 1: return (
-        <div>
-          <h1>Are you a </h1>
-          <button onClick={this.onOptionClick('experience', 'newbie')}>newbie</button>
-          <button onClick={this.onOptionClick('experience', 'data scientist')}>data scientist</button>
-        </div>
-      );
-      case 2: return (
-        <div>
-          <h1>Choose a dataset</h1>
-          <h2>text</h2>
-          <button onClick={this.onOptionClick('dataset', 'newsgroup')}>newsgroup</button>
-          <h2>image</h2>
-          <button onClick={this.onOptionClick('dataset', 'decoy mnist')}>decoy mnist</button>
-          <button onClick={this.onOptionClick('dataset', 'CIFAR')}>CIFAR</button>
-
-        </div>
-      );
-      case 3: return (<MaskingCanvas />);
-      default: return (<div>home</div>);
-    }
-  }
-
+class ExperimentCard extends React.Component {
   render() {
+    const {
+      name, description, domain, started,
+    } = this.props.experiment;
     return (
-      <div className="Home">
-        <div className="App-body-card">
-          {this.renderBody()}
+      <div className="Home-ExperimentCard">
+        <div className="Home-ExperimentCard-info">
+          <h1>{name}</h1>
+          <p>{description}</p>
+          <h2>{domain ? 'image' : 'text'}</h2>
         </div>
+        <button className="Home-ExperimentCard-button" onClick={this.props.goToWorkspace}>{started ? 'resume' : 'start'}</button>
       </div>
     );
   }
 }
 
-export default App;
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      all_experiments: [],
+    };
+  }
+
+  componentDidMount = () => {
+    // TODO get running experiments
+    this.setState({
+      all_experiments: [
+        {
+          name: 'Decoy MNIST',
+          description: 'Handwritten digits',
+          domain: 1,
+          started: true,
+        },
+        {
+          name: 'Newsgroup-20',
+          description: 'Emails',
+          domain: 0,
+          started: false,
+        },
+      ],
+    });
+  }
+
+  goToWorkspace = (experiment) => () => {this.props.goToWorkspace(experiment);}
+
+  renderBody = () => this.state.all_experiments.map(experiment => (<ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>))
+
+  render() {
+    return (
+      <div className="Home">
+        {this.renderBody()}
+      </div>
+    );
+  }
+}
+
+export default Home;

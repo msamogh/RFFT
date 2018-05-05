@@ -40,7 +40,7 @@ class DrawCanvas extends React.Component {
   }
 
   getMeta = (url) => {
-    let img = new Image();
+    const img = new Image();
     img.addEventListener('load', () => {
       this.setState({ width: img.naturalWidth, height: img.naturalHeight });
       const node = ReactDOM.findDOMNode(this.refs.canvas);
@@ -112,16 +112,12 @@ class DrawCanvas extends React.Component {
       const imageData = ctx.getImageData(0, 0, width, height).data;
       const imageToMat = [];
       console.log(imageData);
-      for (let row = 0, count = -1; row < width; row++) {
-        imageToMat[row] = [];
-        // imageToMat[row][col] = 'rgba(' + imageData[++count] + ', ' + imageData[++count] + ', ' + imageData[++count] + ', ' + imageData[++count] + ')';
-        for (let col = 0; col < height; col++) {
-          // TODO use dynamic mask colour
-          if (imageData[++count] === 0 && imageData[++count] === 0 && imageData[++count] === 255 && imageData[++count] === 255) {
-            imageToMat[row][col] = 1;
-          } else {
-            imageToMat[row][col] = 0;
-          }
+      for (let row = 0, count = -1; row < width * height; row++) {
+        // TODO use dynamic mask colour
+        if (imageData[++count] === 0 && imageData[++count] === 0 && imageData[++count] === 255 && imageData[++count] === 255) {
+          imageToMat[row] = 1;
+        } else {
+          imageToMat[row] = 0;
         }
       }
       console.log(imageToMat);

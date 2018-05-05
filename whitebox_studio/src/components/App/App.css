@@ -4,15 +4,13 @@ Body {
 
 .App {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100vh;
-  background-color: grey;
+  background-color: #e5e5e5;
+
 }
 
 .App-body-card {
-  margin: 1%;
-  background-color: white;
-  padding: 1%;
-  box-shadow: blue;
+  background-color: #e5e5e5;
   flex-grow: 1;
 }
