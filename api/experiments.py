@@ -13,7 +13,7 @@ class Experiments(Resource):
             experiments.append({
                 'name': exp.pretty_name(),
                 'description': exp.description(),
-                'domain': exp.domain().value,
+                'domain': exp.domain().value + 1,
                 'started': exp.status.started
             })
         return jsonify({'all_experiments': experiments})
