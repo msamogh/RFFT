@@ -17,8 +17,8 @@ try:
 except ImportError:
     from urllib import urlopen
 
-from lime import lime_image
-from skimage.segmentation import mark_boundaries
+# from lime import lime_image
+# from skimage.segmentation import mark_boundaries
 
 from rfft.experiment import Experiment
 from rfft.experiment import ExperimentStatus
@@ -40,6 +40,12 @@ class DecoyMNIST(Experiment):
 
     def domain(self):
         return ExperimentType.IMAGE
+
+    def pretty_name(self):
+        return 'Decoy MNIST'
+
+    def description(self):
+        return 'Handwritten digits'
 
     def generate_dataset(self, cachefile='data/decoy-mnist.npz'):
         if cachefile and os.path.exists(cachefile):
