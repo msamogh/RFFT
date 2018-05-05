@@ -3,9 +3,9 @@ dist: trusty
 group: stable
 language: python
 cache: pip
+script: []
 deploy:
   provider: heroku
   api_key:
     secure: "ae08d8bd-7fd8-4f63-8cbb-a95d98e0282d"
   app: whitebox-rfft
-  
