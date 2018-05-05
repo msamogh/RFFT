@@ -18,7 +18,8 @@ class Dataset(Enum):
 
 class ExperimentStatus(object):
 
-    def __init__(self, dataset_generated=False, annotations_loaded=False, trained=False):
+    def __init__(self, started=False, dataset_generated=False, annotations_loaded=False, trained=False):
+        self.started = started
         self.dataset_generated = dataset_generated
         self.annotations_loaded = annotations_loaded
         self.trained = trained
@@ -32,9 +33,19 @@ class Experiment(metaclass=ABCMeta):
 
     @abstractmethod
     def domain(self):
-        """Returns the nature of the domain of the experiment - text, image, or tabular.
+        """Returns the data domain of the experiment - text, image, or tabular.
         The values can take on any of the values from ExperimentType.
         """
+        pass
+
+    @abstractmethod
+    def pretty_name(self):
+        """Returns human readable name of the experiment."""
+        pass
+
+    @abstractmethod
+    def description(self):
+        """Returns description of the experiment."""
         pass
 
     @abstractmethod
@@ -56,7 +67,7 @@ class Experiment(metaclass=ABCMeta):
 
     @abstractmethod
     def load_annotations(self, **hypothesis_params):
-        """Loads and processed annotations."""
+        """Loads and processes annotations."""
         pass
 
     @abstractmethod

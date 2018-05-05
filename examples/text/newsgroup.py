@@ -133,7 +133,7 @@ class NewsGroup(Experiment):
         if not os.path.exists('tagging/newsgroup'):
             os.mkdir('tagging/newsgroup')
 
-        with open('tagging/newsgroup/'+str(file_id)+'.txt', 'w') as fout:
+        with open('tagging/newsgroup/' + str(file_id) + '.txt', 'w') as fout:
             fout.write(self.newsgroups_train.data[file_id])
 
     def generate_tagging_set(self, size=20):
