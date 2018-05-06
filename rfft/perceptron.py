@@ -4,8 +4,10 @@ from abc import abstractmethod
 import numpy as np
 
 
-class Perceptron(metaclass=ABCMeta):
+class Perceptron():
     """Base class for perceptrons."""
+
+    __metaclass__ = ABCMeta
 
     def grad_explain(self, X, **kwargs):
         yhats = self.predict(X)
