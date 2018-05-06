@@ -17,6 +17,7 @@ script:
   - cd ..
   - git add templates/
   - git add static/
+  - git commit -am 'Added React build files'
   - ls
 deploy:
   provider: heroku
