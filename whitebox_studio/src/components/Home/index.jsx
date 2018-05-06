@@ -1,6 +1,10 @@
 import React from 'react';
 import './Home.css';
 
+
+const API = 'http://whitebox-rfft.herokuapp.com/api/v1'
+
+
 class ExperimentCard extends React.Component {
   render() {
     const {
@@ -29,22 +33,26 @@ class Home extends React.Component {
 
   componentDidMount = () => {
     // TODO get running experiments
-    this.setState({
-      all_experiments: [
-        {
-          name: 'Decoy MNIST',
-          description: 'Handwritten digits',
-          domain: 1,
-          started: true,
-        },
-        {
-          name: 'Newsgroup-20',
-          description: 'Emails',
-          domain: 0,
-          started: false,
-        },
-      ],
-    });
+    fetch(API + '/all_experiments')
+      .then(response => response.json())
+      .then(data => this.setState({ all_experiments: data.all_experiments }));
+
+    // this.setState({
+    //   all_experiments: [
+    //     {
+    //       name: 'Decoy MNIST',
+    //       description: 'Handwritten digits',
+    //       domain: 1,
+    //       started: true,
+    //     },
+    //     {
+    //       name: 'Newsgroup-20',
+    //       description: 'Emails',
+    //       domain: 0,
+    //       started: false,
+    //     },
+    //   ],
+    // });
   }
 
   goToWorkspace = (experiment) => () => {this.props.goToWorkspace(experiment);}
