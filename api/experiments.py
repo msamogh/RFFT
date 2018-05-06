@@ -12,6 +12,7 @@ class Experiments(Resource):
         for exp in experiment_cache.values():
             experiments.append({
                 'name': exp.pretty_name(),
+                'id': exp.__class__.__name__,
                 'description': exp.description(),
                 'domain': exp.domain().value,
                 'started': exp.status.started
