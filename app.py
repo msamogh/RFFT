@@ -7,7 +7,7 @@ from jinja2.exceptions import TemplateNotFound
 
 from api.annotation import Annotation
 from api.train import Train
-from api.experiment import Experiment
+from api.exp import Experiment
 from api.experiments import Experiments
 
 
@@ -35,4 +35,4 @@ def register_endpoints(api):
 register_endpoints(api)
 
 port = int(os.environ.get('PORT', 8000))
-app.run(host='0.0.0.0', port=port, debug=True)
+app.run(host='0.0.0.0', port=port, debug=True, threaded=True)

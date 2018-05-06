@@ -23,8 +23,8 @@ class Annotation(Resource):
     def get(self, experiment_name, sample_idx):
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
-            annotation = experiment.get_annotation(sample_idx)
-            return jsonify({'annotation': annotation})
+            result = experiment.get_annotation(int(sample_idx))
+            return jsonify(result)
         except KeyError as ke:
             return str(ke), 400
         except Exception as ex:
