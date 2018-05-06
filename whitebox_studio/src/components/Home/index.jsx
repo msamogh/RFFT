@@ -2,8 +2,8 @@ import React from 'react';
 import './Home.css';
 
 
-// const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
-const API = `http://55c9e8ce.ngrok.io/api/v1`;
+const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
+// const API = `http://55c9e8ce.ngrok.io/api/v1`;
 // const API = 'http://localhost:8000/api/v1';
 
 
