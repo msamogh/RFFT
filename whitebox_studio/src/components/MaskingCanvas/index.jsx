@@ -10,17 +10,18 @@ import './MaskingCanvas.css';
 
 
 class DrawCanvas extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       paths: [[]],
       isDrawing: false,
       top: 0,
       left: 0,
       simplify: false,
-      simplifyThreshold: 50,
+      simplifyThreshold: props.attributes.brushSize,
       height: 0,
       width: 0,
+      color: props.attributes.color,
       uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cephalometric_radiograph.JPG/600px-Cephalometric_radiograph.JPG',
     };
   }
@@ -170,20 +171,18 @@ class DrawCanvas extends React.Component {
             {
               paths.map(path => (<path
                 key={path}
-                stroke="blue"
-                strokeWidth={this.state.simplifyThreshold}
+                stroke={this.props.attributes.color}
+                strokeWidth={this.props.attributes.brushSize}
                 d={path}
                 fill="none"
               />))
             }
           </svg>
-          <input type="range" min="10" max="100" value={this.state.simplifyThreshold} step="10" orient="vertical" onChange={this.setThreshold.bind(this)} />
-          <h2>{this.state.simplifyThreshold}</h2>
         </div>
         <div className="MaskingCanvas-button-container">
+          <button onClick={this.getNextImage}>get previous image</button>
           <button onClick={this.save}>save</button>
           <button onClick={this.getNextImage}>get next image</button>
-          <button onClick={this.done}>done</button>
         </div>
       </div>
     );
