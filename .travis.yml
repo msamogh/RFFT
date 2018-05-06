@@ -15,6 +15,8 @@ script:
   - cp -rf build/static ../
   - rm -rf build
   - cd ..
+  - git add templates/
+  - git add static/
   - ls
 deploy:
   provider: heroku
