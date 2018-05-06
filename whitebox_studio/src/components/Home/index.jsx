@@ -2,10 +2,20 @@ import React from 'react';
 import './Home.css';
 
 
-const API = 'http://whitebox-rfft.herokuapp.com/api/v1'
+const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
 
 
 class ExperimentCard extends React.Component {
+  getDomainName(domainId) {
+    switch(domainId) {
+      case 0:
+        return 'Text';
+      case 1:
+        return 'Image';
+      default:
+        return 'Other';
+    }
+  }
   render() {
     const {
       name, description, domain, started,
@@ -13,11 +23,11 @@ class ExperimentCard extends React.Component {
     return (
       <div className="Home-ExperimentCard">
         <div className="Home-ExperimentCard-info">
-          <h1>{name}</h1>
-          <p>{description}</p>
-          <h2>{domain ? 'image' : 'text'}</h2>
+          <h1 className="Home-ExperimentCard-name">{name}</h1>
+          <p className="Home-ExperimentCard-desc">{description}</p>
+          <h2 className="Home-ExperimentCard-domain">{this.getDomainName(domain)}</h2>
         </div>
-        <button className="Home-ExperimentCard-button" onClick={this.props.goToWorkspace}>{started ? 'resume' : 'start'}</button>
+        <button className="Home-ExperimentCard-button" onClick={this.props.goToWorkspace}>{started ? 'Resume experiment' : 'Start experiment'}</button>
       </div>
     );
   }
