@@ -2,25 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import saveSvgAsPng from '../../../node_modules/save-svg-as-png/saveSvgAsPng';
 import './MaskingCanvas.css';
-
-
-// const _url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cephalometric_radiograph.JPG/600px-Cephalometric_radiograph.JPG';
-// const height = 480;
-// const width = 600;
-
-
 class DrawCanvas extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
+      index: 0,
       paths: [[]],
       isDrawing: false,
       top: 0,
       left: 0,
-      simplify: false,
-      simplifyThreshold: 50,
       height: 0,
       width: 0,
+      mask: [],
       uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cephalometric_radiograph.JPG/600px-Cephalometric_radiograph.JPG',
     };
   }
@@ -36,7 +29,7 @@ class DrawCanvas extends React.Component {
     this.setState({ top, left });
     node.ondragstart = function () { return false; };
 
-    this.getNextImage();
+    this.getImage(this.state.index);
   }
 
   getMeta = (url) => {
@@ -47,7 +40,6 @@ class DrawCanvas extends React.Component {
       const rect = node.getBoundingClientRect();
       const { left, top } = rect;
       this.setState({ top, left });
-      // alert( img.naturalWidth +' '+ img.naturalHeight );
     });
     img.src = url;
   }
@@ -80,14 +72,6 @@ class DrawCanvas extends React.Component {
         this.setState({ uri, paths: [[]] });
       });
     }
-  }
-
-  toggleSimplify() {
-    this.setState({ simplify: !this.state.simplify });
-  }
-
-  setThreshold(e) {
-    this.setState({ simplifyThreshold: e.target.value });
   }
 
   save = () => {
@@ -126,12 +110,18 @@ class DrawCanvas extends React.Component {
     img.src = this.state.uri;
   }
 
-  getNextImage = () => {
+  getImage = (index) => {
     // TODO get new image
   }
 
-  done = () => {
-    // TODO send done message
+  getNextImage = () => {
+    this.getImage(this.state.index + 1);
+    this.setState({ index: this.state.index + 1 });
+  }
+
+  getPreviousImage = () => {
+    this.getImage(this.state.index - 1);
+    this.setState({ index: this.state.index - 1 });
   }
 
   render() {
@@ -170,20 +160,18 @@ class DrawCanvas extends React.Component {
             {
               paths.map(path => (<path
                 key={path}
-                stroke="blue"
-                strokeWidth={this.state.simplifyThreshold}
+                stroke={this.props.attributes.color}
+                strokeWidth={this.props.attributes.brushSize}
                 d={path}
                 fill="none"
               />))
             }
           </svg>
-          <input type="range" min="10" max="100" value={this.state.simplifyThreshold} step="10" orient="vertical" onChange={this.setThreshold.bind(this)} />
-          <h2>{this.state.simplifyThreshold}</h2>
         </div>
         <div className="MaskingCanvas-button-container">
+          <button onClick={this.getNextImage}>previous</button>
           <button onClick={this.save}>save</button>
-          <button onClick={this.getNextImage}>get next image</button>
-          <button onClick={this.done}>done</button>
+          <button onClick={this.getPreviousImage}>next</button>
         </div>
       </div>
     );
