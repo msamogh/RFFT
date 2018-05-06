@@ -2,7 +2,8 @@ import React from 'react';
 import './Home.css';
 
 
-const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
+// const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
+const API = 'http://localhost:8000/api/v1';
 
 
 class ExperimentCard extends React.Component {
@@ -12,10 +13,13 @@ class ExperimentCard extends React.Component {
         return 'Text';
       case 1:
         return 'Image';
+      case 2:
+        return 'Tabular';
       default:
         return 'Other';
     }
   }
+
   render() {
     const {
       name, description, domain, started,
@@ -47,10 +51,14 @@ class ExperimentList extends React.Component {
       .then(data => this.setState({ all_experiments: data.all_experiments }));
   }
 
-  goToWorkspace = (experiment) => () => {this.props.goToWorkspace(experiment);}
+  goToWorkspace = (experiment) => () => {
+    this.props.goToWorkspace(experiment);
+  }
 
   render() {
-    return this.state.all_experiments.map(experiment => (<ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>))
+    return this.state.all_experiments.map(experiment => (
+      <ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>
+    ))
   }
 }
 
