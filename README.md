@@ -1,7 +1,7 @@
 # Right For the First Time
 
 ![Build](https://travis-ci.org/msamogh/RFFT.svg?branch=master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/f69108dc13b2058acc9f/maintainability)](https://codeclimate.com/github/msamogh/RFFT/maintainability)(https://codeclimate.com/github/msamogh/RFFT/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f69108dc13b2058acc9f/maintainability)]
 
 Right For the First Time extends the idea of RRR (Right for the Right Reasons) of constraining machine learning models to prevent them from learning rules that humans know are wrong. The idea of using a small amount of human annotated data to constrain the explanations is an evolution to a definitively preventive measure compared to letting unguided heuristics that struggle to come up with constraints on their own.
 
