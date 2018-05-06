@@ -33,7 +33,7 @@ class ExperimentCard extends React.Component {
   }
 }
 
-class Home extends React.Component {
+class ExperimentList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,37 +42,23 @@ class Home extends React.Component {
   }
 
   componentDidMount = () => {
-    // TODO get running experiments
     fetch(API + '/all_experiments')
       .then(response => response.json())
       .then(data => this.setState({ all_experiments: data.all_experiments }));
-
-    // this.setState({
-    //   all_experiments: [
-    //     {
-    //       name: 'Decoy MNIST',
-    //       description: 'Handwritten digits',
-    //       domain: 1,
-    //       started: true,
-    //     },
-    //     {
-    //       name: 'Newsgroup-20',
-    //       description: 'Emails',
-    //       domain: 0,
-    //       started: false,
-    //     },
-    //   ],
-    // });
   }
 
   goToWorkspace = (experiment) => () => {this.props.goToWorkspace(experiment);}
 
-  renderBody = () => this.state.all_experiments.map(experiment => (<ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>))
+  render() {
+    return this.state.all_experiments.map(experiment => (<ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>))
+  }
+}
 
+class Home extends React.Component {
   render() {
     return (
       <div className="Home">
-        {this.renderBody()}
+        <ExperimentList goToWorkspace={this.props.goToWorkspace}/>
       </div>
     );
   }
