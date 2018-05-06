@@ -13,6 +13,7 @@
   background-color: white;
   display: flex;
   flex-direction: column;
+  margin: 0 15px;
   justify-content: space-between;
   /* border: 2px solid rgb(7, 150, 207); */
   min-height: 50%;
