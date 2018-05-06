@@ -25,9 +25,17 @@ class AttributesBar extends React.Component {
     </div>
   )
 
+  trainAttributes = () => (
+    <div className="train-atrributes">
+      <input type="checkbox"/>
+      <input type="number"/>
+    </div>
+  )
+
   renderStateAttributes = () => {
     switch (this.props.state) {
       case 'Annotate' : return (this.annotatorAttributes());
+      case 'Train' : return (this.trainAttributes());
       default: return('home');
     }
   }
