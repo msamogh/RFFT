@@ -7,7 +7,7 @@ from jinja2.exceptions import TemplateNotFound
 
 from api.annotation import Annotation
 from api.train import Train
-from api.exp import Experiment
+from api.experiment import Experiment
 from api.experiments import Experiments
 
 
