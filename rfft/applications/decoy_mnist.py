@@ -1,10 +1,19 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+try:
+    from io import BytesIO
+except ImportError:
+    import cStringIO
+
 import array
+import base64
 import gzip
 import os
+import random
 import struct
+
+from celery import Celery
 
 from PIL import Image
 
@@ -14,7 +23,7 @@ import autograd.numpy.random as npr
 try:
     from urllib.request import urlretrieve
 except ImportError:
-    from urllib import urlopen
+    from urllib2 import urlopen
 
 # from lime import lime_image
 # from skimage.segmentation import mark_boundaries
@@ -30,6 +39,10 @@ ANNOTATIONS_DIR = 'tagging/decoy_mnist'
 
 
 class DecoyMNIST(Experiment):
+
+    def __init__(self):
+        Experiment.__init__(self)
+        self.annotation_idxs = []
 
     def get_status(self):
         return self.status
@@ -79,9 +92,11 @@ class DecoyMNIST(Experiment):
         self.hypothesis = Hypothesis(A, **hypothesis_params)
         self.status.annotations_loaded = True
 
+
     def unload_annotations(self):
         self.hypothesis = None
         self.status.annotations_loaded = False
+
 
     def set_annotation(self, idx, annotation_json):
         value = annotation_json['value']
@@ -93,12 +108,46 @@ class DecoyMNIST(Experiment):
         mask[indices] = int(not value)
         np.save(os.path.join(ANNOTATIONS_DIR, str(idx)), mask)
 
-    def get_annotation(self, idx):
+
+    def _get_mask_from_idx(self, idx):
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
         print(annotation_path)
         if os.path.exists(annotation_path):
             return np.load(annotation_path).tolist()
         return None
+
+
+    def _convert_image_to_base64(self, image):
+        try:
+            buffered = BytesIO()
+        except:
+            buffered = cStringIO.StringIO()
+        image.save(buffered, format='JPEG')
+        return base64.b64encode(buffered.getvalue())
+
+
+    def get_annotation(self, idx):
+        if idx < len(self.annotation_idxs):
+            annotation_idx = self.annotation_idxs[idx]
+            image = self.get_image(self.X[annotation_idx])
+            mask = self._get_mask_from_idx(annotation_idx)
+        elif idx == len(self.annotation_idxs):
+            while True:
+                annotation_idx = random.randint(0, len(self.X) - 1)
+                if annotation_idx in self.annotation_idxs:
+                    continue
+                self.annotation_idxs.append(annotation_idx)
+                image = self.get_image(self.X[annotation_idx])
+                mask = []
+                break
+        else:
+            raise IndexError('idx must be less than or equal to the current number of annotations')
+        return {
+            'annotation_idx': idx,
+            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image),
+            'mask': mask
+        }
+
 
     def delete_annotation(self, idx):
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
@@ -107,13 +156,17 @@ class DecoyMNIST(Experiment):
         except FileNotFoundError:
             pass
 
+
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
-        self.model.fit(self.X,
-                       self.y,
-                       hypothesis=self.hypothesis,
-                       num_epochs=num_epochs,
-                       always_include=self.affected_indices)
+        if self.status.annotations_loaded:
+            self.model.fit(self.X,
+                           self.y,
+                           hypothesis=self.hypothesis,
+                           num_epochs=num_epochs,
+                           always_include=self.affected_indices)
+        else:
+            self.model.fit(self.X, self.y, num_epochs=num_epochs)
         self.status.trained = True
 
     def explain(self, sample, **explanation_params):
@@ -152,8 +205,7 @@ class DecoyMNIST(Experiment):
             with gzip.open(filename, 'rb') as fh:
                 magic, num_data, rows, cols = struct.unpack(
                     ">IIII", fh.read(16))
-                return np.array(array.array("B", fh.read()), dtype=np.uint8).reshape(num_data, rows,
-                                                                                     cols)
+                return np.array(array.array("B", fh.read()), dtype=np.uint8).reshape(num_data, rows, cols)
 
         for filename in ['train-images-idx3-ubyte.gz', 'train-labels-idx1-ubyte.gz',
                          't10k-images-idx3-ubyte.gz', 't10k-labels-idx1-ubyte.gz']:
@@ -162,8 +214,8 @@ class DecoyMNIST(Experiment):
                     urlretrieve(base_url + filename,
                                 os.path.join(datadir, filename))
                 except:
-                    urlopen(base_url + filename,
-                            os.path.join(datadir, filename))
+                    with open(os.path.join(datadir, filename), 'w') as f:
+                        f.write(urlopen(base_url + filename).read())
 
         train_images = parse_images(os.path.join(
             datadir, 'train-images-idx3-ubyte.gz'))
@@ -226,12 +278,10 @@ class DecoyMNIST(Experiment):
 
         return Xr, X, y, E, Xtr, Xt, yt, Et
 
-    def save_image_to_file(self, array, file_id, show=False):
+    def get_image(self, array):
         img = array.reshape((28, 28))
         img = Image.fromarray(img)
-        img.save('tagging/decoy_mnist/' + str(file_id) + '.png')
-        if show:
-            img.show()
+        return img
 
     def generate_tagging_set(self, Xtr, size=20):
         indices = []
@@ -240,7 +290,8 @@ class DecoyMNIST(Experiment):
             if index in indices:
                 continue
             indices.append(index)
-            self.save_image_to_file(Xtr[index], index)
+            image = self.get_image(Xtr[index], index)
+            image.save('tagging/decoy_mnist/' + str(index) + '.png')
 
 
 if __name__ == '__main__':
