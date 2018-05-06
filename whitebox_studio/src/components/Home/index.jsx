@@ -6,7 +6,7 @@ const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
 
 
 class ExperimentCard extends React.Component {
-  getDomainName(domainId) {
+  getDomainName = (domainId) => {
     switch(domainId) {
       case 0:
         return 'Text';
