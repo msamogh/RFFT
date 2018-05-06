@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('rrr')
 from toy_colors import *
 from rfft.multilayer_perceptron import *
@@ -26,7 +27,8 @@ for l in data_counts:
     num_epochs = int((10000 / float(l)) * 32)
     kwargs = {'num_epochs': num_epochs, 'batch_size': min(256, l)}
     print(l, num_epochs)
-
+    
+    
     def params_for(A):
         if A is None:
             A = np.zeros_like(X).astype(bool)
@@ -35,7 +37,8 @@ for l in data_counts:
                 verbose=lambda i: i in verbits, **kwargs)
         print(mlp.score(Xt, yt))
         return mlp.params
-
+    
+    
     normals_by_count.append(params_for(None))
     pro_r1s_by_count.append(params_for(A_pro_rule1))
     pro_r2s_by_count.append(params_for(A_pro_rule2))

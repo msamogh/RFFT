@@ -1,16 +1,15 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import array
+import gzip
+import os
+import struct
+
 from PIL import Image
 
-import autograd.numpy.random as npr
-
-import os
-import gzip
-import pickle
-import struct
-import array
 import autograd.numpy as np
+import autograd.numpy.random as npr
 
 try:
     from urllib.request import urlretrieve
@@ -20,15 +19,12 @@ except ImportError:
 # from lime import lime_image
 # from skimage.segmentation import mark_boundaries
 
-from rfft.experiment import Experiment
-from rfft.experiment import ExperimentStatus
-from rfft.experiment import ExperimentType
 from rfft.experiment import Dataset
+from rfft.experiment import Experiment
+from rfft.experiment import ExperimentType
 
-from rfft.multilayer_perceptron import MultilayerPerceptron
 from rfft.hypothesis import Hypothesis
-from rfft.applications.parse import get_image_mask_from_xml
-
+from rfft.multilayer_perceptron import MultilayerPerceptron
 
 ANNOTATIONS_DIR = 'tagging/decoy_mnist'
 

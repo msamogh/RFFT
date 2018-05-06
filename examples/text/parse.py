@@ -5,6 +5,7 @@ import json
 import os
 import autograd.numpy as np
 
+
 def get_image_mask_from_xml(bbox_path, image_size, valid_class_names=[]):
     """Return mask vector from LabelImg annotation.
 

@@ -18,7 +18,8 @@ class Dataset(Enum):
 
 class ExperimentStatus(object):
 
-    def __init__(self, started=False, dataset_generated=False, annotations_loaded=False, trained=False):
+    def __init__(self, started=False, dataset_generated=False, annotations_loaded=False,
+                 trained=False):
         self.started = started
         self.dataset_generated = dataset_generated
         self.annotations_loaded = annotations_loaded
@@ -97,7 +98,8 @@ class Experiment(metaclass=ABCMeta):
 
     @abstractmethod
     def score_model(self):
-        """Runs prediction of the model on train and test sets and returns the performance metrics."""
+        """Runs prediction of the model on train and test sets and returns the performance
+        metrics."""
         pass
 
     @abstractmethod

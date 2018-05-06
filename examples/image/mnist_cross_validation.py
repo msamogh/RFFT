@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('rrr')
 import decoy_mnist
 from rfft.multilayer_perceptron import *
@@ -14,7 +15,7 @@ verbits = set(np.logspace(0, 5, 10).astype(int))
 powers = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 params = []
 accurs = []
-l2s = [10**p for p in powers]
+l2s = [10 ** p for p in powers]
 for l2 in l2s:
     print('############')
     print('l2 =', l2)

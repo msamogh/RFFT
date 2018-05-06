@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('rrr')
 import decoy_mnist
 from rfft.multilayer_perceptron import *
