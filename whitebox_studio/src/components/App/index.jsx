@@ -35,11 +35,8 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        {/* <NavigationBar onClick={this.onNavigationClick} /> */}
         <TopBar goHome={()=>this.onNavigationClick('home')}/>
-        <div className="App-body-card">
-          {this.renderBody()}
-        </div>
+        {this.renderBody()}
       </div>
     );
   }
