@@ -2,7 +2,8 @@ import React from 'react';
 import './Home.css';
 
 
-const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
+// const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
+const API = `http://55c9e8ce.ngrok.io/api/v1`;
 // const API = 'http://localhost:8000/api/v1';
 
 
@@ -53,6 +54,9 @@ class ExperimentList extends React.Component {
 
   goToWorkspace = (experiment) => () => {
     this.props.goToWorkspace(experiment);
+    fetch(API + `/experiment/DecoyMNIST`, {method: 'POST'})
+      .then(response => response.json())
+      .then(data => this.setState({ all_experiments: data.all_experiments }));
   }
 
   render() {
