@@ -7,7 +7,7 @@ cache:
     - $HOME/virtualenv
     - $TRAVIS_BUILD_DIR/whitebox_studio/node_modules
 script:
-  - mkdir templates
+  - mkdir -p templates
   - cd $TRAVIS_BUILD_DIR/whitebox_studio
   - npm install
   - npm run build
