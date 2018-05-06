@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('rrr')
 from toy_colors import *
 from multilayer_perceptron import *
@@ -15,7 +16,7 @@ n_mlps = []
 for n in n_vals:
     print(n)
     A = np.array([ignore_rule1 for _ in range(
-        n)] + [np.zeros_like(ignore_rule1).astype(bool) for _ in range(len(y)-n)])
+        n)] + [np.zeros_like(ignore_rule1).astype(bool) for _ in range(len(y) - n)])
     mlp = MultilayerPerceptron(l2_grads=1000)
     mlp.fit(X, y, A)
     n_mlps.append(mlp.params)

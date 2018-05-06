@@ -1,10 +1,11 @@
 import random
+
 import numpy as np
 
 
 class Hypothesis(object):
     """Class representing a hypothesis for a dataset."""
-    
+
     def __init__(self,
                  A,
                  weight=10,
@@ -27,7 +28,7 @@ class Hypothesis(object):
         else:
             self.weight = weight
         self.per_annotation = per_annotation
-    
+
     def __repr__(self):
         """String representation of hypothesis metadata."""
         if self.per_annotation:
@@ -36,7 +37,7 @@ class Hypothesis(object):
                 self.per_annotation,
                 self.num_annotations)
         return 'Hypothesis: weight={}, per_annotation={}'.format(self.weight, self.per_annotation)
-    
+
     @staticmethod
     def incrementally_sample(annotations,
                              hypothesis_load_fn,
@@ -44,7 +45,7 @@ class Hypothesis(object):
                              increment=5,
                              shuffle=True,
                              **hypothesis_params):
-        
+
         """Return an iterator of hypotheses in which more annotations are sampled in each iteration.
 
         Args:

@@ -24,7 +24,7 @@ from parse import get_image_mask_from_xml
 
 
 class DecoyMNIST(Experiment):
-
+    
     def domain(self):
         return IMAGE
     
@@ -51,7 +51,7 @@ class DecoyMNIST(Experiment):
             A[index] = mask
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
-
+    
     def clear_annotations(self):
         self.hypothesis = None
     
@@ -65,7 +65,7 @@ class DecoyMNIST(Experiment):
                        hypothesis=self.hypothesis,
                        num_epochs=num_epochs,
                        always_include=self.affected_indices)
-
+    
     def explain(self, sample):
         pass
     
@@ -73,7 +73,6 @@ class DecoyMNIST(Experiment):
         print('Train: {0}, Test: {1}'.format(
             self.model.score(self.X, self.y), self.model.score(self.Xt, self.yt)))
     
-
     def download_mnist(self, datadir):
         if not os.path.exists(datadir):
             os.makedirs(datadir)
@@ -184,7 +183,7 @@ if __name__ == '__main__':
     decoy_mnist.load_annotations(weight=10, per_annotation=True)
     decoy_mnist.train(num_epochs=1)
     decoy_mnist.score_model()
-
+    
     print('Training without annotations')
     decoy_mnist.clear_annotations()
     decoy_mnist.train(num_epochs=2)
