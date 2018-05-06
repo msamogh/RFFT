@@ -14,7 +14,7 @@ import autograd.numpy.random as npr
 try:
     from urllib.request import urlretrieve
 except ImportError:
-    from urllib import urlopen
+    from urllib2 import urlopen
 
 # from lime import lime_image
 # from skimage.segmentation import mark_boundaries
@@ -30,6 +30,9 @@ ANNOTATIONS_DIR = 'tagging/decoy_mnist'
 
 
 class DecoyMNIST(Experiment):
+
+    def __init__(self):
+        Experiment.__init__(self)
 
     def get_status(self):
         return self.status
@@ -152,8 +155,7 @@ class DecoyMNIST(Experiment):
             with gzip.open(filename, 'rb') as fh:
                 magic, num_data, rows, cols = struct.unpack(
                     ">IIII", fh.read(16))
-                return np.array(array.array("B", fh.read()), dtype=np.uint8).reshape(num_data, rows,
-                                                                                     cols)
+                return np.array(array.array("B", fh.read()), dtype=np.uint8).reshape(num_data, rows, cols)
 
         for filename in ['train-images-idx3-ubyte.gz', 'train-labels-idx1-ubyte.gz',
                          't10k-images-idx3-ubyte.gz', 't10k-labels-idx1-ubyte.gz']:
@@ -162,8 +164,8 @@ class DecoyMNIST(Experiment):
                     urlretrieve(base_url + filename,
                                 os.path.join(datadir, filename))
                 except:
-                    urlopen(base_url + filename,
-                            os.path.join(datadir, filename))
+                    with open(os.path.join(datadir, filename), 'w') as f:
+                        f.write(urlopen(base_url + filename).read())
 
         train_images = parse_images(os.path.join(
             datadir, 'train-images-idx3-ubyte.gz'))

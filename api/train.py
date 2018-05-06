@@ -7,7 +7,9 @@ import json
 class Train(Resource):
 
     def post(self, experiment_name):
-        req_json = request.get_json()
+        print(experiment_name)
+        req_json = json.loads(request.data)
+        print(req_json)
         try:
             num_epochs = int(req_json['num_epochs'])
             experiment = ExperimentCache().get_experiment(experiment_name)
@@ -18,3 +20,8 @@ class Train(Resource):
             return str(ke), 400
         except Exception as ex:
             return str(ex), 500
+
+    def get(self, experiment_name):
+        print(experiment_name)
+        experiment = ExperimentCache().get_experiment(experiment_name)
+        return 'hi'
