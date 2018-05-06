@@ -12,6 +12,10 @@ class ExperimentSpace extends React.Component {
     this.state = {
       experiment: {},
       state: 'home',
+      attributes: {
+        color: '#0000ff',
+        brushSize: 50,
+      }
     };
   }
 
@@ -19,13 +23,17 @@ class ExperimentSpace extends React.Component {
     this.setState({state});
   }
 
+  onAttributesChange = (attributes) => {
+    this.setState({attributes: {...this.state.attributes, ...attributes}})
+  }
+
   render() {
-    const {state} = this.state;
+    const {state, attributes} = this.state;
     return (
       <div className="ExperimentSpace">
         <SideBar onClick={this.navigateToAction}/>
-        <WorkSpace state={state}/>
-        <AttributesBar state={state}/>
+        <WorkSpace state={state} attributes={attributes}/>
+        <AttributesBar state={state} attributes={attributes} onAttributesChange={this.onAttributesChange}/>
       </div>
     );
   }

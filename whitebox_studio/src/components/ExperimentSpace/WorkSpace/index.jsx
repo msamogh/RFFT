@@ -6,7 +6,7 @@ import './WorkSpace.css';
 class WorkSpace extends React.Component {
   renderAction = () => {
     switch (this.props.state) {
-      case 'Annotate' : return (<Annotator/>);
+      case 'Annotate' : return (<Annotator attributes={this.props.attributes}/>);
       case 'Train' : return (<LossGraph />)
       default: return('home');
     }
