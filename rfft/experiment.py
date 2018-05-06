@@ -26,8 +26,10 @@ class ExperimentStatus(object):
         self.trained = trained
 
 
-class Experiment(metaclass=ABCMeta):
+class Experiment():
     """Represents an experiment."""
+
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         self.status = ExperimentStatus()

@@ -19,7 +19,9 @@ class BaseSingleton(type):
         return cls.instance
 
 
-class ExperimentCache(metaclass=BaseSingleton):
+class ExperimentCache():
+
+    __metaclass__ = BaseSingleton
 
     def __init__(self):
         def get_experiment_from_name(name):
