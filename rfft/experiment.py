@@ -18,10 +18,9 @@ class Dataset(Enum):
 
 class ExperimentStatus(object):
 
-    def __init__(self, started=False, dataset_generated=False, annotations_loaded=False,
+    def __init__(self, initialized=False, annotations_loaded=False,
                  trained=False):
-        self.started = started
-        self.dataset_generated = dataset_generated
+        self.initialized = initialized
         self.annotations_loaded = annotations_loaded
         self.trained = trained
 

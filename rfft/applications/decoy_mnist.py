@@ -65,10 +65,10 @@ class DecoyMNIST(Experiment):
             if cachefile:
                 np.savez(cachefile, *data)
         self.Xr, self.X, self.y, self.E, self.Xtr, self.Xt, self.yt, self.Et = data
-        self.status.dataset_generated = True
+        self.status.initialized = True
 
     def get_sample(self, dataset, idx):
-        if not self.status.dataset_generated:
+        if not self.status.initialized:
             raise AttributeError('Generate dataset before fetching samples.')
         if dataset == Dataset.TRAIN:
             return Xr[idx]
