@@ -11,9 +11,16 @@ const plotOptions = {
   }
 };
 
+const chart = {
+  height: 300,
+  width: 450,
+  spacing: [5, 5, 5, 5]
+}
+
 const App = () => (
   <div className="app">
-    <HighchartsChart plotOptions={plotOptions}>
+    <h4>Loss Function</h4>
+    <HighchartsChart plotOptions={plotOptions} chart={chart}>
       <Chart />
 
       <Title>Loss Function</Title>

@@ -20,10 +20,10 @@ class AttributesBar extends React.Component {
   annotatorAttributes = () => (
     <div className="annotator-atrributes">
       <div>
-        <label for="brushColor">Brush Color: </label>
+        <label for="brushColor">Brush Color</label>
         <input id="brushColor" type="color" value={this.props.attributes.color} onChange={this.annotatorColorChange}/>
       </div>
-      <label for="brushSize">{`Brush Size: ${this.props.attributes.brushSize}`}</label>
+      <label for="brushSize">{`Brush Size${this.props.attributes.brushSize}`}</label>
       <input id="brushSize" type="range" min="10" max="100" value={this.props.attributes.brushSize} step="10" onChange={this.annotatorBrushSizeChange}/>
     </div>
   )
@@ -31,13 +31,18 @@ class AttributesBar extends React.Component {
   trainAttributes = () => (
     <div className="train-atrributes">
       <div>
-        <label for="useAnnotations">Use Annotations:</label>
+        <label for="useAnnotations">Use Annotations while training</label><br />
         <input type="checkbox" id="useAnnotations"/>
       </div>
-      <label for="numberOfAnnotations">Number of Annotations:</label>
-      <input type="number" id="numberOfAnnotations" placeholder="number of annotations" defaultValue={10}/>
-      <label for="numberOfEpochs">Number of Epochs: </label>
-      <input type="number" id="numberOfEpochs" placeholder="number of epochs" defaultValue={10}/>
+
+      <label for="numberOfAnnotations">Number of Annotations to use</label>
+      <input type="number" id="numberOfAnnotations" max="30"/>
+
+      <label for="numberOfEpochs">Number of Epochs</label>
+      <input type="number" id="numberOfEpochs" />
+
+      <label for="numberOfEpochs">Hypothesis weight</label>
+      <input type="number" id="hypothesisWeight" min="0" max="100000" step="10"/>
     </div>
   )
 
@@ -52,6 +57,7 @@ class AttributesBar extends React.Component {
   render() {
     return (
       <div className="AttributesBar">
+        <h4>Properties</h4>
         {this.renderStateAttributes()}   
       </div>
     );

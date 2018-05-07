@@ -17,4 +17,11 @@ class Experiments(Resource):
                 'domain': exp.domain().value,
                 'started': exp.status.started
             })
+            experiments.append({
+                'name': exp.pretty_name(),
+                'id': 'efe' + exp.__class__.__name__,
+                'description': exp.description(),
+                'domain': exp.domain().value,
+                'started': exp.status.started
+            })
         return jsonify({'all_experiments': experiments})
