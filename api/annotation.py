@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_restful import request, Resource
-from experiment.experiment_cache import ExperimentCache
+from .experiment.experiment_cache import ExperimentCache
 
 import json
 import numpy as np
