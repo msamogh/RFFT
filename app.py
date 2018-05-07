@@ -28,7 +28,7 @@ def home():
 def register_endpoints(api):
     api.add_resource(Experiment, PATH_V1_API + '/experiment/<experiment_name>')
     api.add_resource(Experiments, PATH_V1_API + '/all_experiments')
-    api.add_resource(Annotation, PATH_V1_API + '/annotation/<experiment_name>/<sample_idx>')
+    api.add_resource(Annotation, PATH_V1_API + '/annotation/<experiment_name>/<int:sample_idx>')
     api.add_resource(Train, PATH_V1_API + '/train/<experiment_name>')
 
 
