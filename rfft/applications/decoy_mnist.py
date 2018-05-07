@@ -98,15 +98,13 @@ class DecoyMNIST(Experiment):
         self.status.annotations_loaded = False
 
 
-    def set_annotation(self, idx, annotation_json):
-        value = annotation_json['value']
-        indices = annotation_json['indices']
-        length = annotation_json['length']
-
-        initializer = {0: np.ones, 1: np.zeros}
-        mask = initializer[value](length, dtype='uint8')
-        mask[indices] = int(not value)
-        np.save(os.path.join(ANNOTATIONS_DIR, str(idx)), mask)
+    def set_annotation(self, idx, mask):
+        mask = np.array(mask)
+        if idx < len(self.annotation_idxs):
+            annotation_idx = self.annotation_idxs[idx]
+            np.save(os.path.join(ANNOTATIONS_DIR, str(annotation_idx)), mask)
+        else:
+            raise IndexError('idx must be less than the current number of annotations')
 
 
     def _get_mask_from_idx(self, idx):
@@ -150,11 +148,15 @@ class DecoyMNIST(Experiment):
 
 
     def delete_annotation(self, idx):
-        annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
-        try:
-            os.remove(annotation_path)
-        except FileNotFoundError:
-            pass
+        if idx < len(self.annotation_idxs):
+            annotation_idx = self.annotation_idxs[idx]
+            annotation_path = os.path.join(ANNOTATIONS_DIR, str(annotation_idx) + '.npy')
+            try:
+                os.remove(annotation_path)
+            except FileNotFoundError:
+                pass
+        else:
+            raise IndexError('idx must be less than the current number of annotations')
 
 
     def train(self, num_epochs=6):
