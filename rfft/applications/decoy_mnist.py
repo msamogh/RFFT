@@ -144,7 +144,7 @@ class DecoyMNIST(Experiment):
             raise IndexError('idx must be less than or equal to the current number of annotations')
         return {
             'annotation_idx': idx,
-            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image),
+            'data': 'data:image/jpg;base64,' + str(self._convert_image_to_base64(image)),
             'mask': mask
         }
 
