@@ -15,6 +15,6 @@ class Experiments(Resource):
                 'id': exp.__class__.__name__,
                 'description': exp.description(),
                 'domain': exp.domain().value,
-                'started': exp.status.started
+                'initialized': exp.status.initialized
             })
         return jsonify({'all_experiments': experiments})
