@@ -17,6 +17,7 @@ PATH_V1_API = '/api/v1'
 app = Flask(__name__)
 api = Api(app)
 
+
 @app.route('/')
 def home():
     try:
