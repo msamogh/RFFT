@@ -6,6 +6,6 @@ from experiment.experiment_cache import ExperimentCache
 
 class Experiment(Resource):
 
-    def post(self, experiment_name):
+    def get(self, experiment_name):
         experiment = ExperimentCache().get_experiment(experiment_name)
-        experiment.generate_dataset()
+        return jsonify(experiment.status.__dict__)
