@@ -1,7 +1,4 @@
-from collections import defaultdict
-
 import importlib
-import rfft.applications.decoy_mnist
 
 
 EXPERIMENTS = {
@@ -19,7 +16,7 @@ class BaseSingleton(type):
         return cls.instance
 
 
-class ExperimentCache():
+class ExperimentCache(object):
 
     __metaclass__ = BaseSingleton
 
@@ -27,15 +24,18 @@ class ExperimentCache():
         def get_experiment_from_name(name):
             module = importlib.import_module(EXPERIMENTS[name])
             experiment = getattr(module, name)()
+            experiment.generate_dataset()
             return experiment
-        self._experiment_cache = {name: get_experiment_from_name(name) for name in EXPERIMENTS}
 
+        self._experiment_cache = {name: get_experiment_from_name(name) for name in EXPERIMENTS}
 
     def get_experiment_cache(self):
         return self._experiment_cache
 
-
     def get_experiment(self, experiment_name):
         if experiment_name not in self._experiment_cache:
             raise KeyError('Could not find experiment named {}.'.format(experiment_name))
-        return self._experiment_cache[experiment_name]
+        experiment = self._experiment_cache[experiment_name]
+        if not experiment.status.initialized:
+            experiment.generate_dataset()
+        return experiment
