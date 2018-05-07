@@ -36,5 +36,6 @@ class ExperimentCache(object):
         if experiment_name not in self._experiment_cache:
             raise KeyError('Could not find experiment named {}.'.format(experiment_name))
         experiment = self._experiment_cache[experiment_name]
-        experiment.generate_dataset()
+        if not experiment.status.initialized:
+            experiment.generate_dataset()
         return experiment
