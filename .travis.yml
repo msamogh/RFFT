@@ -6,6 +6,8 @@ cache:
   directories:
     - $HOME/virtualenv
     - $TRAVIS_BUILD_DIR/whitebox_studio/node_modules
+install:
+  - echo Mock installation
 script:
   - mkdir -p templates
   - cd $TRAVIS_BUILD_DIR/whitebox_studio

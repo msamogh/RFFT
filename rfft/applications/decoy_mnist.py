@@ -111,7 +111,6 @@ class DecoyMNIST(Experiment):
 
     def _get_mask_from_idx(self, idx):
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
-        print(annotation_path)
         if os.path.exists(annotation_path):
             return np.load(annotation_path).tolist()
         return None

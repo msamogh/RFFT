@@ -2,9 +2,9 @@ import React from 'react';
 import './Home.css';
 
 
-const API = '/api/v1';
-// const API = `http://55c9e8ce.ngrok.io/api/v1`;
-// const API = 'http://localhost:8000/api/v1';
+// const API = '/api/v1';
+// const API = 'http://55c9e8ce.ngrok.io/api/v1';
+const API = 'http://localhost:8000/api/v1';
 
 
 class ExperimentCard extends React.Component {
@@ -54,7 +54,7 @@ class ExperimentList extends React.Component {
 
   goToWorkspace = (experiment) => () => {
     this.props.goToWorkspace(experiment);
-    fetch(API + `/experiment/DecoyMNIST`, {method: 'POST'})
+    fetch(API + '/experiment/', {method: 'POST'})
       .then(response => response.json())
       .then(data => this.setState({ all_experiments: data.all_experiments }));
   }
