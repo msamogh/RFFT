@@ -10,6 +10,7 @@ from api.train import Train
 from api.exp import Experiment
 from api.experiments import Experiments
 from api.explanation import Explanation
+from api.saved_experiments import SavedExperiments
 
 
 PATH_V1_API = '/api/v1'
@@ -34,8 +35,10 @@ def register_endpoints(api):
     api.add_resource(Train, PATH_V1_API + '/train/<experiment_name>')
     api.add_resource(Explanation, PATH_V1_API + '/explanation/<experiment_name>/<int:sample_idx>')
 
+    api.add_resource(SavedExperiments, PATH_V1_API + '/saved_experiments/<experiment_name>')
+
 
 register_endpoints(api)
 
 port = int(os.environ.get('PORT', 8000))
-app.run(host='0.0.0.0', port=port, debug=True, threaded=True)
+app.run(host='0.0.0.0', port=port, debug=False, threaded=True)

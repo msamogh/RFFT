@@ -11,7 +11,11 @@ class Annotation(Resource):
     def put(self, experiment_name, sample_idx):
         req_json = json.loads(request.data.decode('utf-8'))
         mask = req_json['mask']
-        print(mask)
+        try:
+            np.array(mask, dtype='uint8')
+        except Exception:
+            return 'Mask in invalid format.', 400
+
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
             experiment.set_annotation(sample_idx, mask)

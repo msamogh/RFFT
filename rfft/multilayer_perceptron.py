@@ -98,7 +98,8 @@ class MultilayerPerceptron(Perceptron):
     def predict_proba(self, inputs):
         if self.input_preprocessor:
             inputs = self.input_preprocessor(inputs)
-        return np.exp(feed_forward(self.params, inputs))
+        result = np.exp(feed_forward(self.params, inputs))
+        return result
 
     def predict(self, inputs):
         return np.argmax(feed_forward(self.params, inputs), axis=1)
@@ -111,8 +112,7 @@ class MultilayerPerceptron(Perceptron):
             kwargs['scale'] = None  # default to non-log probs
         return input_gradients(self.params, **kwargs)(X.astype(np.float32))
 
-    def fit(
-            self,
+    def fit(self,
             inputs,
             targets,
             hypothesis=None,
@@ -126,8 +126,7 @@ class MultilayerPerceptron(Perceptron):
             verbose=False,
             callback=None,
             show_progress_every=100,
-            **input_grad_kwargs
-    ):
+            **input_grad_kwargs):
         X = inputs.astype(np.float32)
         y = one_hot(targets)
         params = init_random_params(

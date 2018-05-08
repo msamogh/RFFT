@@ -20,8 +20,3 @@ class Train(Resource):
             return str(ke), 400
         except Exception as ex:
             return str(ex), 500
-
-    def get(self, experiment_name):
-        print(experiment_name)
-        experiment = ExperimentCache().get_experiment(experiment_name)
-        return 'hi'
