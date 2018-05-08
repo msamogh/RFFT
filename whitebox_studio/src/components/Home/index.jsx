@@ -1,12 +1,6 @@
 import React from 'react';
+import constants from '../../constants';
 import './Home.css';
-
-
-// const API = 'http://whitebox-rfft.herokuapp.com/api/v1';
-const API = `http://55c9e8ce.ngrok.io/api/v1`;
-// const API = 'http://localhost:8000/api/v1';
-
-
 class ExperimentCard extends React.Component {
   getDomainName = (domainId) => {
     switch(domainId) {
@@ -47,21 +41,19 @@ class ExperimentList extends React.Component {
   }
 
   componentDidMount = () => {
-    fetch(API + '/all_experiments')
+    const API = `${constants.API}/all_experiments`;
+    fetch(API)
       .then(response => response.json())
       .then(data => this.setState({ all_experiments: data.all_experiments }));
   }
 
   goToWorkspace = (experiment) => () => {
     this.props.goToWorkspace(experiment);
-    fetch(API + `/experiment/DecoyMNIST`, {method: 'POST'})
-      .then(response => response.json())
-      .then(data => this.setState({ all_experiments: data.all_experiments }));
   }
 
   render() {
     return this.state.all_experiments.map(experiment => (
-      <ExperimentCard experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>
+      <ExperimentCard key={experiment.id} experiment={experiment} goToWorkspace={this.goToWorkspace(experiment)}/>
     ))
   }
 }
