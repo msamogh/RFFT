@@ -37,7 +37,7 @@ class AttributesBar extends React.Component {
 
       <label for="numberOfAnnotations">Number of Annotations to use</label>
       <input type="number" id="numberOfAnnotations" max="30"/>
-
+      
       <label for="numberOfEpochs">Number of Epochs</label>
       <input type="number" id="numberOfEpochs" />
 

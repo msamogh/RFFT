@@ -8,7 +8,7 @@ import json
 class Train(Resource):
 
     def post(self, experiment_name):
-        req_json = json.loads(request.data)
+        req_json = json.loads(request.data.decode('utf-8'))
         try:
             num_epochs = int(req_json['num_epochs'])
             experiment = ExperimentCache().get_experiment(experiment_name)
