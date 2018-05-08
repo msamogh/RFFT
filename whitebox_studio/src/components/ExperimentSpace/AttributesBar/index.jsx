@@ -28,6 +28,10 @@ class AttributesBar extends React.Component {
     </div>
   )
 
+  train = () => {
+    //TODO call api.
+  }
+
   trainAttributes = () => (
     <div className="train-atrributes">
       <div>
@@ -43,6 +47,8 @@ class AttributesBar extends React.Component {
 
       <label htmlFor="numberOfEpochs">Hypothesis weight</label>
       <input type="number" id="hypothesisWeight" min="0" max="100000" step="10"/>
+
+      <button onClick={this.train}>TRAIN</button>
     </div>
   )
 
