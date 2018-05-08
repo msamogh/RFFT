@@ -20,11 +20,11 @@ class AttributesBar extends React.Component {
   annotatorAttributes = () => (
     <div className="annotator-atrributes">
       <div>
-        <label htmlFor="brushColor">Brush Color</label>
+        <label htmlFor="brushColor">Brush Color </label>
         <input id="brushColor" type="color" value={this.props.attributes.color} onChange={this.annotatorColorChange}/>
       </div>
-      <label htmlFor="brushSize">{`Brush Size${this.props.attributes.brushSize}`}</label>
-      <input id="brushSize" type="range" min="10" max="100" value={this.props.attributes.brushSize} step="10" onChange={this.annotatorBrushSizeChange}/>
+      <label htmlFor="brushSize">{`Brush Size ${this.props.attributes.brushSize}`}</label>
+      <input id="brushSize" type="range" min="1" max="10" value={this.props.attributes.brushSize} step="1" onChange={this.annotatorBrushSizeChange}/>
     </div>
   )
 
