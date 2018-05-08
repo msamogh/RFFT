@@ -25,8 +25,8 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-# from lime import lime_image
-# from skimage.segmentation import mark_boundaries
+from lime import lime_image
+from skimage.segmentation import mark_boundaries
 
 from rfft.experiment import Dataset
 from rfft.experiment import Experiment
@@ -141,7 +141,7 @@ class DecoyMNIST(Experiment):
             raise IndexError('idx must be less than or equal to the current number of annotations')
         return {
             'annotation_idx': idx,
-            'data': 'data:image/jpg;base64,' + str(self._convert_image_to_base64(image)),
+            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image).decode('utf-8'),
             'mask': mask
         }
 
@@ -170,10 +170,14 @@ class DecoyMNIST(Experiment):
             self.model.fit(self.X, self.y, num_epochs=num_epochs)
         self.status.trained = True
 
-    def explain(self, sample, **explanation_params):
+    def explain(self, idx, **explanation_params):
         if not self.status.trained:
             raise AttributeError(
                 'You must have trained the model to be able to generate explanations.')
+
+        image = self.Xt[idx]
+        predicted_label = self.model.predict(np.array([image]))
+
         explainer = lime_image.LimeImageExplainer()
         explanation = explainer.explain_instance(image,
                                                  self.model,
@@ -181,8 +185,9 @@ class DecoyMNIST(Experiment):
                                                  hide_color=0,
                                                  num_samples=1000)
         temp, mask = explanation.get_image_and_mask(
-            240, positive_only=True, num_features=5, hide_rest=True)
+            predicted_label, positive_only=True, num_features=5, hide_rest=True)
         masked_image = mark_boundaries(temp / 2 + 0.5, mask)
+        print(masked_image)
         return masked_image
 
     def score_model(self):
@@ -302,6 +307,7 @@ if __name__ == '__main__':
     decoy_mnist.load_annotations(weight=10, per_annotation=True)
     decoy_mnist.train(num_epochs=1)
     print(decoy_mnist.score_model())
+    print(decoy_mnist.explain(0))
 
     print('Training without annotations')
     decoy_mnist.unload_annotations()
