@@ -83,11 +83,18 @@ class DrawCanvas extends React.Component {
   }
 
   save = () => {
+    const zeroTest = (element) => {
+        return element === 0;
+    }
     const {index, mask} = this.state;
     const API = `${constants.API}/annotation/DecoyMNIST/${index}`;
-    let body = {mask};
-    body = JSON.stringify(body);
-    fetch(API, { method: 'PUT', body})
+    if(mask.every(zeroTest)) {
+      fetch(API, { method: 'DELETE'})
+    } else {
+      let body = {mask};
+      body = JSON.stringify(body);
+      fetch(API, { method: 'PUT', body})
+    }  
   }
   clearMask = () => {
     const mask = new Array(28*28);
