@@ -1,6 +1,7 @@
 import React from 'react';
 import Annotator from '../../MaskingCanvas';
 import LossGraph from '../../LossGraph';
+import Explain from '../../Explain'
 import './WorkSpace.css';
 
 class WorkSpace extends React.Component {
@@ -10,7 +11,10 @@ class WorkSpace extends React.Component {
         <Annotator attributes={this.props.attributes}/>
       );
       case 'Train' : return (
-        <LossGraph />
+        <div>
+          <LossGraph />
+          <Explain />
+        </div>
       )
       default: return('home');
     }
