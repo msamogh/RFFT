@@ -19,4 +19,16 @@
 
 label {
   margin-top: 10px;
+  font-size: 14px;
+  font-variant: small-caps;
+  text-transform: lowercase;
+}
+
+h4 {
+  font-family: Arial, sans-serif;
+}
+
+input {
+  border: 2px solid #333;
+  padding: 2px;
 }

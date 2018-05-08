@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import request, Resource
 
-from experiment.experiment_cache import ExperimentCache
+from .experiment.experiment_cache import ExperimentCache
 
 
 class Experiments(Resource):
@@ -12,8 +12,9 @@ class Experiments(Resource):
         for exp in experiment_cache.values():
             experiments.append({
                 'name': exp.pretty_name(),
+                'id': exp.__class__.__name__,
                 'description': exp.description(),
                 'domain': exp.domain().value,
-                'started': exp.status.started
+                'initialized': exp.status.initialized
             })
         return jsonify({'all_experiments': experiments})
