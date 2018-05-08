@@ -24,7 +24,6 @@ class ExperimentCache(object):
         def get_experiment_from_name(name):
             module = importlib.import_module(EXPERIMENTS[name])
             experiment = getattr(module, name)()
-            experiment.generate_dataset()
             return experiment
 
         self._experiment_cache = {name: get_experiment_from_name(name) for name in EXPERIMENTS}
