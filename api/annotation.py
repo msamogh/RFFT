@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_restful import request, Resource
-from experiment.experiment_cache import ExperimentCache
+from .experiment.experiment_cache import ExperimentCache
 
 import json
 import numpy as np
@@ -9,11 +9,12 @@ import numpy as np
 class Annotation(Resource):
 
     def put(self, experiment_name, sample_idx):
-        req_json = request.get_json()
-        annotation = req_json['annotation']
+        req_json = json.loads(request.data.decode('utf-8'))
+        mask = req_json['mask']
+        print(mask)
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
-            experiment.set_annotation(sample_idx, annotation)
+            experiment.set_annotation(sample_idx, mask)
         except KeyError as ke:
             return str(ke), 400
         except Exception as ex:
@@ -23,7 +24,7 @@ class Annotation(Resource):
     def get(self, experiment_name, sample_idx):
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
-            result = experiment.get_annotation(int(sample_idx))
+            result = experiment.get_annotation(sample_idx)
             return jsonify(result)
         except KeyError as ke:
             return str(ke), 400
@@ -33,7 +34,7 @@ class Annotation(Resource):
     def delete(self, experiment_name, sample_idx):
         try:
             experiment = ExperimentCache().get_experiment(experiment_name)
-            annotation = experiment.delete_annotation(sample_idx)
+            experiment.delete_annotation(sample_idx)
             return 'Annotation deleted', 200
         except KeyError as ke:
             return str(ke), 400

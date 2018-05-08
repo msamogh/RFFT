@@ -9,6 +9,7 @@ from api.annotation import Annotation
 from api.train import Train
 from api.exp import Experiment
 from api.experiments import Experiments
+from api.explanation import Explanation
 
 
 PATH_V1_API = '/api/v1'
@@ -16,6 +17,7 @@ PATH_V1_API = '/api/v1'
 
 app = Flask(__name__)
 api = Api(app)
+
 
 @app.route('/')
 def home():
@@ -28,8 +30,9 @@ def home():
 def register_endpoints(api):
     api.add_resource(Experiment, PATH_V1_API + '/experiment/<experiment_name>')
     api.add_resource(Experiments, PATH_V1_API + '/all_experiments')
-    api.add_resource(Annotation, PATH_V1_API + '/annotation/<experiment_name>/<sample_idx>')
+    api.add_resource(Annotation, PATH_V1_API + '/annotation/<experiment_name>/<int:sample_idx>')
     api.add_resource(Train, PATH_V1_API + '/train/<experiment_name>')
+    api.add_resource(Explanation, PATH_V1_API + '/explanation/<experiment_name>/<int:sample_idx>')
 
 
 register_endpoints(api)

@@ -20,24 +20,29 @@ class AttributesBar extends React.Component {
   annotatorAttributes = () => (
     <div className="annotator-atrributes">
       <div>
-        <label htmlFor="brushColor">Brush Color: </label>
+        <label htmlFor="brushColor">Brush Color</label>
         <input id="brushColor" type="color" value={this.props.attributes.color} onChange={this.annotatorColorChange}/>
       </div>
-      <label htmlFor="brushSize">{`Brush Size: ${this.props.attributes.brushSize}`}</label>
-      <input id="brushSize" type="range" min="1" max="10" value={this.props.attributes.brushSize} step="1" onChange={this.annotatorBrushSizeChange}/>
+      <label htmlFor="brushSize">{`Brush Size${this.props.attributes.brushSize}`}</label>
+      <input id="brushSize" type="range" min="10" max="100" value={this.props.attributes.brushSize} step="10" onChange={this.annotatorBrushSizeChange}/>
     </div>
   )
 
   trainAttributes = () => (
     <div className="train-atrributes">
       <div>
-        <label htmlFor="useAnnotations">Use Annotations:</label>
+        <label htmlFor="useAnnotations">Use Annotations while training</label><br />
         <input type="checkbox" id="useAnnotations"/>
       </div>
-      <label htmlFor="numberOfAnnotations">Number of Annotations:</label>
-      <input type="number" id="numberOfAnnotations" placeholder="number of annotations" defaultValue={10}/>
-      <label htmlFor="numberOfEpochs">Number of Epochs: </label>
-      <input type="number" id="numberOfEpochs" placeholder="number of epochs" defaultValue={10}/>
+
+      <label htmlFor="numberOfAnnotations">Number of Annotations to use</label>
+      <input type="number" id="numberOfAnnotations" max="30"/>
+      
+      <label htmlFor="numberOfEpochs">Number of Epochs</label>
+      <input type="number" id="numberOfEpochs" />
+
+      <label htmlFor="numberOfEpochs">Hypothesis weight</label>
+      <input type="number" id="hypothesisWeight" min="0" max="100000" step="10"/>
     </div>
   )
 
@@ -52,6 +57,7 @@ class AttributesBar extends React.Component {
   render() {
     return (
       <div className="AttributesBar">
+        <h4>Properties</h4>
         {this.renderStateAttributes()}   
       </div>
     );
