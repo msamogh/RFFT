@@ -14,7 +14,7 @@ class ExperimentSpace extends React.Component {
       state: 'home',
       attributes: {
         color: '#0000ff',
-        brushSize: 50,
+        brushSize: 2,
       }
     };
   }
