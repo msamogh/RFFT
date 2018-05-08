@@ -10,8 +10,10 @@ import array
 import base64
 import gzip
 import os
+import pickle
 import random
 import struct
+import time
 
 from celery import Celery
 
@@ -35,7 +37,9 @@ from rfft.experiment import ExperimentType
 from rfft.hypothesis import Hypothesis
 from rfft.multilayer_perceptron import MultilayerPerceptron
 
+
 ANNOTATIONS_DIR = 'tagging/decoy_mnist'
+MODELS_DIR = 'models/decoy_mnist'
 
 
 class DecoyMNIST(Experiment):
@@ -102,12 +106,14 @@ class DecoyMNIST(Experiment):
         mask = np.array(mask)
         if idx < len(self.annotation_idxs):
             annotation_idx = self.annotation_idxs[idx]
+            print('Saving {}'.format(annotation_idx))
             np.save(os.path.join(ANNOTATIONS_DIR, str(annotation_idx)), mask)
         else:
             raise IndexError('idx must be less than the current number of annotations')
 
 
     def _get_mask_from_idx(self, idx):
+        print('Loading {}'.format(idx))
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
         if os.path.exists(annotation_path):
             return np.load(annotation_path).tolist()
@@ -152,11 +158,10 @@ class DecoyMNIST(Experiment):
             annotation_path = os.path.join(ANNOTATIONS_DIR, str(annotation_idx) + '.npy')
             try:
                 os.remove(annotation_path)
-            except FileNotFoundError:
+            except IOError:
                 pass
         else:
             raise IndexError('idx must be less than the current number of annotations')
-
 
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
@@ -170,24 +175,36 @@ class DecoyMNIST(Experiment):
             self.model.fit(self.X, self.y, num_epochs=num_epochs)
         self.status.trained = True
 
+    def save_experiment(self):
+        filename = str(int(time.time()))
+        with open(os.path.join(MODELS_DIR, filename), 'wb') as f:
+            pickle.dump(self.__dict__, f)
+
     def explain(self, idx, **explanation_params):
         if not self.status.trained:
             raise AttributeError(
                 'You must have trained the model to be able to generate explanations.')
 
         image = self.Xt[idx]
-        predicted_label = self.model.predict(np.array([image]))
+        image = np.reshape(image, (28, 28))
+        predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
+        print(predicted_label)
+
+        def preprocessor(inputs):
+            inputs = inputs[:, :, :, 0]
+            return np.reshape(inputs, (-1, 784))
+
+        self.model.input_preprocessor = preprocessor
 
         explainer = lime_image.LimeImageExplainer()
         explanation = explainer.explain_instance(image,
-                                                 self.model,
-                                                 top_labels=5,
-                                                 hide_color=0,
-                                                 num_samples=1000)
+                                                 self.model.predict_proba,
+                                                 top_labels=10,
+                                                 num_samples=3000)
         temp, mask = explanation.get_image_and_mask(
-            predicted_label, positive_only=True, num_features=5, hide_rest=True)
+            predicted_label, positive_only=False, hide_rest=False)
         masked_image = mark_boundaries(temp / 2 + 0.5, mask)
-        print(masked_image)
+        Image.fromarray(masked_image.astype('uint8')).show()
         return masked_image
 
     def score_model(self):
@@ -302,14 +319,17 @@ class DecoyMNIST(Experiment):
 
 if __name__ == '__main__':
     print('Training with annotations')
-    decoy_mnist = DecoyMNIST()
-    decoy_mnist.generate_dataset()
-    decoy_mnist.load_annotations(weight=10, per_annotation=True)
-    decoy_mnist.train(num_epochs=1)
+    # decoy_mnist = DecoyMNIST()
+    # decoy_mnist.generate_dataset()
+    # decoy_mnist.load_annotations(weight=10, per_annotation=True)
+    # decoy_mnist.train(num_epochs=10)
+    # pickle.dump(decoy_mnist, open('model.pkl', 'wb'))
+    decoy_mnist = pickle.load(open('model.pkl', 'rb'))
     print(decoy_mnist.score_model())
-    print(decoy_mnist.explain(0))
+    for i in range(10):
+        decoy_mnist.explain(i)
 
-    print('Training without annotations')
-    decoy_mnist.unload_annotations()
-    decoy_mnist.train(num_epochs=2)
-    print(decoy_mnist.score_model())
+    # print('Training without annotations')
+    # decoy_mnist.unload_annotations()
+    # decoy_mnist.train(num_epochs=2)
+    # print(decoy_mnist.score_model())
