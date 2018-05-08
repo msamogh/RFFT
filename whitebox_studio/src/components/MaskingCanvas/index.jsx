@@ -89,6 +89,11 @@ class DrawCanvas extends React.Component {
     body = JSON.stringify(body);
     fetch(API, { method: 'PUT', body})
   }
+  clearMask = () => {
+    const mask = new Array(28*28);
+    mask.fill(0,0,28*28);
+    this.setState({mask});
+  }
 
   getImage = (index) => {
     const API = `${constants.API}/annotation/DecoyMNIST/${index}`;
@@ -151,6 +156,7 @@ class DrawCanvas extends React.Component {
         <div className="MaskingCanvas-button-container">
           <button onClick={this.getPreviousImage}>previous</button>
           <button onClick={this.save}>save</button>
+          <button onClick={this.clearMask}>clear</button>
           <button onClick={this.getNextImage}>next</button>
         </div>
       </div>
