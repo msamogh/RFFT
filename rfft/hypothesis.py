@@ -22,8 +22,8 @@ class Hypothesis(object):
             per_annotation: True if weight specified is "per annotation".
         """
         self.A = A
+        self.num_annotations = len(set(np.where(A != 0)[0]))
         if per_annotation:
-            self.num_annotations = len(set(np.where(A != 0)[0]))
             self.weight = weight * self.num_annotations
         else:
             self.weight = weight
@@ -31,12 +31,10 @@ class Hypothesis(object):
 
     def __repr__(self):
         """String representation of hypothesis metadata."""
-        if self.per_annotation:
-            return 'Hypothesis: weight={}, per_annotation={}, num_annotations={}'.format(
-                self.weight,
-                self.per_annotation,
-                self.num_annotations)
-        return 'Hypothesis: weight={}, per_annotation={}'.format(self.weight, self.per_annotation)
+        return 'Hypothesis: weight={}, per_annotation={}, num_annotations={}'.format(
+            self.weight,
+            self.per_annotation,
+            self.num_annotations)
 
     @staticmethod
     def incrementally_sample(annotations,

@@ -39,10 +39,11 @@ from rfft.multilayer_perceptron import MultilayerPerceptron
 
 
 ANNOTATIONS_DIR = 'tagging/decoy_mnist'
-MODELS_DIR = 'models/decoy_mnist'
 
 
 class DecoyMNIST(Experiment):
+
+    MODELS_DIR = 'models/decoy_mnist'
 
     def __init__(self):
         Experiment.__init__(self)
@@ -87,10 +88,13 @@ class DecoyMNIST(Experiment):
         A = np.zeros(self.X.shape).astype(bool)
         affected_indices = []
         for f in annotation_files:
-            index = int(f.split('/')[-1].split('.')[0])
-            mask = np.load(f)
-            affected_indices.append(index)
-            A[index] = mask
+            try:
+                index = int(f.split('/')[-1].split('.')[0])
+                mask = np.load(f)
+                affected_indices.append(index)
+                A[index] = mask
+            except:
+                continue
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
@@ -165,6 +169,7 @@ class DecoyMNIST(Experiment):
 
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
+        self.num_epochs = num_epochs
         if self.status.annotations_loaded:
             self.model.fit(self.X,
                            self.y,
@@ -177,8 +182,15 @@ class DecoyMNIST(Experiment):
 
     def save_experiment(self):
         filename = str(int(time.time()))
-        with open(os.path.join(MODELS_DIR, filename), 'wb') as f:
-            pickle.dump(self.__dict__, f)
+        self.name = filename
+        self.train_accuracy, self.test_accuracy = self.score_model()
+        save_dict = self.__dict__.copy()
+        do_not_save = ['Xr', 'X', 'y', 'E', 'Xtr', 'Xt', 'yt', 'Et']
+        for attr in do_not_save:
+            save_dict.pop(attr)
+
+        with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
+            pickle.dump(save_dict, f)
 
     def explain(self, idx, **explanation_params):
         if not self.status.trained:
@@ -319,15 +331,12 @@ class DecoyMNIST(Experiment):
 
 if __name__ == '__main__':
     print('Training with annotations')
-    # decoy_mnist = DecoyMNIST()
-    # decoy_mnist.generate_dataset()
-    # decoy_mnist.load_annotations(weight=10, per_annotation=True)
-    # decoy_mnist.train(num_epochs=10)
-    # pickle.dump(decoy_mnist, open('model.pkl', 'wb'))
-    decoy_mnist = pickle.load(open('model.pkl', 'rb'))
+    decoy_mnist = DecoyMNIST()
+    decoy_mnist.generate_dataset()
+    decoy_mnist.load_annotations(weight=10, per_annotation=True)
+    decoy_mnist.train(num_epochs=1)
+    decoy_mnist.save_experiment()
     print(decoy_mnist.score_model())
-    for i in range(10):
-        decoy_mnist.explain(i)
 
     # print('Training without annotations')
     # decoy_mnist.unload_annotations()
