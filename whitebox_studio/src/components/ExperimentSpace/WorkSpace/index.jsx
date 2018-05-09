@@ -13,7 +13,7 @@ class WorkSpace extends React.Component {
       case 'Train' : return (
         <div>
           <LossGraph />
-          <Explain />
+          {/* <Explain experiment={this.props.experiment}/> */}
         </div>
       )
       default: return('home');
