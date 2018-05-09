@@ -130,7 +130,7 @@ class DecoyMNIST(Experiment):
         except:
             buffered = cStringIO.StringIO()
         image.save(buffered, format='JPEG')
-        return base64.b64encode(buffered.getvalue())
+        return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
 
     def get_annotation(self, idx):
@@ -151,7 +151,7 @@ class DecoyMNIST(Experiment):
             raise IndexError('idx must be less than or equal to the current number of annotations')
         return {
             'annotation_idx': idx,
-            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image).decode('utf-8'),
+            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image),
             'mask': mask
         }
 
@@ -185,22 +185,24 @@ class DecoyMNIST(Experiment):
         self.name = filename
         self.train_accuracy, self.test_accuracy = self.score_model()
         save_dict = self.__dict__.copy()
-        do_not_save = ['Xr', 'X', 'y', 'E', 'Xtr', 'Xt', 'yt', 'Et']
+        do_not_save = ['Xr', 'X', 'y', 'E', 'Xtr', 'Et']
         for attr in do_not_save:
             save_dict.pop(attr)
 
         with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
             pickle.dump(save_dict, f)
 
-    def explain(self, idx, **explanation_params):
+    def explain(self, idx=None):
         if not self.status.trained:
             raise AttributeError(
                 'You must have trained the model to be able to generate explanations.')
 
+        if idx is None:
+            idx = random.randint(0, len(self.Xt))
+
         image = self.Xt[idx]
         image = np.reshape(image, (28, 28))
         predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
-        print(predicted_label)
 
         def preprocessor(inputs):
             inputs = inputs[:, :, :, 0]
@@ -216,8 +218,13 @@ class DecoyMNIST(Experiment):
         temp, mask = explanation.get_image_and_mask(
             predicted_label, positive_only=False, hide_rest=False)
         masked_image = mark_boundaries(temp / 2 + 0.5, mask)
-        Image.fromarray(masked_image.astype('uint8')).show()
-        return masked_image
+        image = Image.fromarray(masked_image.astype('uint8'))
+        masked_image_binary = self._convert_image_to_base64(image)
+        return {
+            'data': 'data:image/jpg;base64,' + masked_image_binary,
+            'ground_truth': int(self.yt[idx]),
+            'predicted': predicted_label
+        }
 
     def score_model(self):
         return (
