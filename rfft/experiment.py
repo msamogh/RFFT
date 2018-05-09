@@ -113,7 +113,7 @@ class Experiment():
         experiment = cls()
         if prepend_path:
             filepath = os.path.join(cls.MODELS_DIR, filepath)
-        exp_dict = pickle.load(open(filepath))
+        exp_dict = pickle.load(open(filepath, 'rb'))
         experiment.__dict__.update(exp_dict)
         return experiment
 

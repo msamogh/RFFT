@@ -81,9 +81,10 @@ class DecoyMNIST(Experiment):
             return Xtr[idx]
 
     def load_annotations(self, **hypothesis_params):
+        num_annotations = hypothesis_params['num_annotations']
         annotation_files = [os.path.join(ANNOTATIONS_DIR, x)
                             for x in os.listdir(ANNOTATIONS_DIR)
-                            if x.endswith('.npy')]
+                            if x.endswith('.npy')][:num_annotations]
 
         A = np.zeros(self.X.shape).astype(bool)
         affected_indices = []
@@ -97,7 +98,7 @@ class DecoyMNIST(Experiment):
                 continue
 
         self.affected_indices = affected_indices
-        self.hypothesis = Hypothesis(A, **hypothesis_params)
+        self.hypothesis = Hypothesis(A, weight=hypothesis_params['hypothesis_weight'])
         self.status.annotations_loaded = True
 
 

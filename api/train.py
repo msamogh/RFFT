@@ -11,9 +11,14 @@ class Train(Resource):
         req_json = json.loads(request.data.decode('utf-8'))
         try:
             num_epochs = int(req_json['num_epochs'])
+            num_annotations = int(req_json['num_annotations'])
+            hypothesis_weight = int(req_json['hypothesis_weight'])
+
             experiment = ExperimentCache().get_experiment(experiment_name)
+            experiment.load_annotations(num_annotations=num_annotations, hypothesis_weight=hypothesis_weight)
             experiment.train(num_epochs=num_epochs)
-            return jsonify({'success': True}), 200
+
+            return jsonify({'trained': True}), 200
         except ValueError:
             return 'num_epochs should be an integer.', 400
         except KeyError as ke:
