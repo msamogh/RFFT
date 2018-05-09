@@ -17,8 +17,9 @@ class Train(Resource):
             experiment = ExperimentCache().get_experiment(experiment_name)
             experiment.load_annotations(num_annotations=num_annotations, hypothesis_weight=hypothesis_weight)
             experiment.train(num_epochs=num_epochs)
+            experiment.save_experiment()
 
-            return jsonify({'trained': True}), 200
+            return jsonify({'trained': True})
         except ValueError:
             return 'num_epochs should be an integer.', 400
         except KeyError as ke:

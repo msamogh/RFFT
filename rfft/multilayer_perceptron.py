@@ -8,6 +8,7 @@ import autograd.numpy as np
 import autograd.numpy.random as npr
 from autograd.scipy.misc import logsumexp
 
+from .local_linear_explanation import LocalLinearExplanation
 from .perceptron import Perceptron, one_hot
 
 
@@ -111,6 +112,11 @@ class MultilayerPerceptron(Perceptron):
         if 'scale' not in kwargs:
             kwargs['scale'] = None  # default to non-log probs
         return input_gradients(self.params, **kwargs)(X.astype(np.float32))
+
+    def grad_explain(self, X, **kwargs):
+        yhats = self.predict(X)
+        coefs = self.input_gradients(X, **kwargs)
+        return [LocalLinearExplanation(X[i], yhats[i], coefs[i]) for i in range(len(X))]
 
     def fit(self,
             inputs,

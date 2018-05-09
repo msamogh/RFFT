@@ -13,9 +13,13 @@ class SavedExperiments(Resource):
         saved_experiments_result = []
 
         for experiment in saved_experiments:
+            if experiment.hypothesis.per_annotation:
+                weight = experiment.hypothesis.weight / experiment.hypothesis.num_annotations
+            else:
+                weight = experiment.hypothesis.weight
             saved_experiments_result.append({
                 'name': experiment.name,
-                'hypothesis_weight': experiment.hypothesis.weight,
+                'hypothesis_weight': weight,
                 'per_annotation': experiment.hypothesis.per_annotation,
                 'n_annotations': experiment.hypothesis.num_annotations,
                 'train_accuracy': experiment.train_accuracy,

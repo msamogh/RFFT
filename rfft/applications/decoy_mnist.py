@@ -22,6 +22,8 @@ from PIL import Image
 import autograd.numpy as np
 import autograd.numpy.random as npr
 
+import matplotlib.pyplot as plt
+
 try:
     from urllib.request import urlretrieve
 except ImportError:
@@ -36,6 +38,7 @@ from rfft.experiment import ExperimentType
 
 from rfft.hypothesis import Hypothesis
 from rfft.multilayer_perceptron import MultilayerPerceptron
+from rfft.local_linear_explanation import explanation_grid
 
 
 ANNOTATIONS_DIR = 'tagging/decoy_mnist'
@@ -98,14 +101,13 @@ class DecoyMNIST(Experiment):
                 continue
 
         self.affected_indices = affected_indices
-        self.hypothesis = Hypothesis(A, weight=hypothesis_params['hypothesis_weight'])
+        self.hypothesis = Hypothesis(
+            A, weight=hypothesis_params['hypothesis_weight'])
         self.status.annotations_loaded = True
-
 
     def unload_annotations(self):
         self.hypothesis = None
         self.status.annotations_loaded = False
-
 
     def set_annotation(self, idx, mask):
         mask = np.array(mask)
@@ -114,8 +116,8 @@ class DecoyMNIST(Experiment):
             print('Saving {}'.format(annotation_idx))
             np.save(os.path.join(ANNOTATIONS_DIR, str(annotation_idx)), mask)
         else:
-            raise IndexError('idx must be less than the current number of annotations')
-
+            raise IndexError(
+                'idx must be less than the current number of annotations')
 
     def _get_mask_from_idx(self, idx):
         print('Loading {}'.format(idx))
@@ -124,15 +126,13 @@ class DecoyMNIST(Experiment):
             return np.load(annotation_path).tolist()
         return None
 
-
     def _convert_image_to_base64(self, image):
         try:
             buffered = BytesIO()
         except:
             buffered = cStringIO.StringIO()
-        image.save(buffered, format='JPEG')
+        image.save(buffered, format='PNG')
         return base64.b64encode(buffered.getvalue()).decode('utf-8')
-
 
     def get_annotation(self, idx):
         if idx < len(self.annotation_idxs):
@@ -149,24 +149,26 @@ class DecoyMNIST(Experiment):
                 mask = []
                 break
         else:
-            raise IndexError('idx must be less than or equal to the current number of annotations')
+            raise IndexError(
+                'idx must be less than or equal to the current number of annotations')
         return {
             'annotation_idx': idx,
-            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image),
+            'data': 'data:image/png;base64,' + self._convert_image_to_base64(image),
             'mask': mask
         }
-
 
     def delete_annotation(self, idx):
         if idx < len(self.annotation_idxs):
             annotation_idx = self.annotation_idxs[idx]
-            annotation_path = os.path.join(ANNOTATIONS_DIR, str(annotation_idx) + '.npy')
+            annotation_path = os.path.join(
+                ANNOTATIONS_DIR, str(annotation_idx) + '.npy')
             try:
                 os.remove(annotation_path)
             except IOError:
                 pass
         else:
-            raise IndexError('idx must be less than the current number of annotations')
+            raise IndexError(
+                'idx must be less than the current number of annotations')
 
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
@@ -193,7 +195,60 @@ class DecoyMNIST(Experiment):
         with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
             pickle.dump(save_dict, f)
 
+    def explanation_grid(explanations, imgshape, length=None, gridshape=None, pad=0.1, **kwargs):
+        if len(imgshape) == 2:
+            l, l2 = imgshape
+            assert(l == l2)
+        else:
+            l, l2, d = imgshape
+            assert(l == l2)
+            assert(d == 3)
+
+        if gridshape is None:
+            if length is None:
+                length = int(np.ceil(np.sqrt(len(explanations))))
+            gridshape = (length, length)
+        xlength, ylength = gridshape
+
+        plt.xticks([])
+        plt.yticks([])
+        for spine in plt.gca().spines.values():
+            spine.set_visible(False)
+        plt.xlim(0, l * (xlength * (1 + pad)))
+        plt.ylim(0, l * (ylength * (1 + pad)))
+        n = 0
+        for i in range(xlength):
+            for j in range(ylength):
+                print(type(explanations[n]))
+                explanations[n].imshow(
+                    imgshape, xoff=i * (1 + pad), yoff=(ylength - j - 1) * (1 + pad), **kwargs)
+                n += 1
+
     def explain(self, idx=None):
+        if not self.status.trained:
+            raise AttributeError(
+                'You must have trained the model to be able to generate explanations.')
+
+        if idx is None:
+            idx = random.randint(0, len(self.Xt))
+
+        predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
+
+        explanation_grid(self.model.grad_explain(np.array([self.Xt[0]])), (28, 28))
+
+        # Get explanation image
+        filename = 'temp{}'.format(int(time.time()))
+        plt.savefig(filename)
+        explain_image = self._convert_image_to_base64(Image.open(open(filename + '.png', 'rb')))
+        os.remove(filename + '.png')
+
+        return {
+            'data': 'data:image/png;base64,' + explain_image,
+            'ground_truth': int(self.yt[idx]),
+            'predicted': predicted_label
+        }
+
+    def explain2(self, idx=None):
         if not self.status.trained:
             raise AttributeError(
                 'You must have trained the model to be able to generate explanations.')
@@ -220,6 +275,7 @@ class DecoyMNIST(Experiment):
             predicted_label, positive_only=False, hide_rest=False)
         masked_image = mark_boundaries(temp / 2 + 0.5, mask)
         image = Image.fromarray(masked_image.astype('uint8'))
+        image.show()
         masked_image_binary = self._convert_image_to_base64(image)
         return {
             'data': 'data:image/jpg;base64,' + masked_image_binary,
@@ -339,12 +395,13 @@ class DecoyMNIST(Experiment):
 
 if __name__ == '__main__':
     print('Training with annotations')
-    decoy_mnist = DecoyMNIST()
-    decoy_mnist.generate_dataset()
-    decoy_mnist.load_annotations(weight=10, per_annotation=True)
-    decoy_mnist.train(num_epochs=1)
-    decoy_mnist.save_experiment()
-    print(decoy_mnist.score_model())
+    # decoy_mnist = DecoyMNIST()
+    # decoy_mnist.generate_dataset()
+    # decoy_mnist.load_annotations(weight=10, per_annotation=True)
+    decoy_mnist = DecoyMNIST.load_experiment('1525843725', prepend_path=True)
+    # decoy_mnist.train(num_epochs=1)
+    decoy_mnist.explain()
+    # print(decoy_mnist.explain())
 
     # print('Training without annotations')
     # decoy_mnist.unload_annotations()
