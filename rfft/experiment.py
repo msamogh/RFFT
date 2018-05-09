@@ -1,7 +1,9 @@
+import os
+import pickle
+
 from abc import ABCMeta
 from abc import abstractmethod
 
-from collections import namedtuple
 from enum import Enum
 
 
@@ -30,6 +32,7 @@ class Experiment():
 
     def __init__(self):
         self.status = ExperimentStatus()
+        self.name = None
 
     @abstractmethod
     def domain(self):
@@ -93,6 +96,30 @@ class Experiment():
     @abstractmethod
     def train(self, num_epochs):
         """Initializes and trains a model on the generated train data."""
+        pass
+
+    @classmethod
+    def get_saved_experiments(cls):
+        """Returns list of paths for saved trained experiments."""
+        try:
+            saved_models = os.listdir(cls.MODELS_DIR)
+            return [os.path.join(cls.MODELS_DIR, model) for model in saved_models]
+        except Exception:
+            return []
+
+    @classmethod
+    def load_experiment(cls, filepath, prepend_path=False):
+        """Loads experiment from saved file and returns it."""
+        experiment = cls()
+        if prepend_path:
+            filepath = os.path.join(cls.MODELS_DIR, filepath)
+        exp_dict = pickle.load(open(filepath))
+        experiment.__dict__.update(exp_dict)
+        return experiment
+
+    @abstractmethod
+    def save_experiment(self):
+        """Save experiment state to file."""
         pass
 
     @abstractmethod

@@ -10,8 +10,10 @@ import array
 import base64
 import gzip
 import os
+import pickle
 import random
 import struct
+import time
 
 from celery import Celery
 
@@ -35,10 +37,13 @@ from rfft.experiment import ExperimentType
 from rfft.hypothesis import Hypothesis
 from rfft.multilayer_perceptron import MultilayerPerceptron
 
+
 ANNOTATIONS_DIR = 'tagging/decoy_mnist'
 
 
 class DecoyMNIST(Experiment):
+
+    MODELS_DIR = 'models/decoy_mnist'
 
     def __init__(self):
         Experiment.__init__(self)
@@ -83,10 +88,13 @@ class DecoyMNIST(Experiment):
         A = np.zeros(self.X.shape).astype(bool)
         affected_indices = []
         for f in annotation_files:
-            index = int(f.split('/')[-1].split('.')[0])
-            mask = np.load(f)
-            affected_indices.append(index)
-            A[index] = mask
+            try:
+                index = int(f.split('/')[-1].split('.')[0])
+                mask = np.load(f)
+                affected_indices.append(index)
+                A[index] = mask
+            except:
+                continue
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(A, **hypothesis_params)
@@ -102,12 +110,14 @@ class DecoyMNIST(Experiment):
         mask = np.array(mask)
         if idx < len(self.annotation_idxs):
             annotation_idx = self.annotation_idxs[idx]
+            print('Saving {}'.format(annotation_idx))
             np.save(os.path.join(ANNOTATIONS_DIR, str(annotation_idx)), mask)
         else:
             raise IndexError('idx must be less than the current number of annotations')
 
 
     def _get_mask_from_idx(self, idx):
+        print('Loading {}'.format(idx))
         annotation_path = os.path.join(ANNOTATIONS_DIR, str(idx) + '.npy')
         if os.path.exists(annotation_path):
             return np.load(annotation_path).tolist()
@@ -120,7 +130,7 @@ class DecoyMNIST(Experiment):
         except:
             buffered = cStringIO.StringIO()
         image.save(buffered, format='JPEG')
-        return base64.b64encode(buffered.getvalue())
+        return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
 
     def get_annotation(self, idx):
@@ -141,7 +151,7 @@ class DecoyMNIST(Experiment):
             raise IndexError('idx must be less than or equal to the current number of annotations')
         return {
             'annotation_idx': idx,
-            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image).decode('utf-8'),
+            'data': 'data:image/jpg;base64,' + self._convert_image_to_base64(image),
             'mask': mask
         }
 
@@ -152,14 +162,14 @@ class DecoyMNIST(Experiment):
             annotation_path = os.path.join(ANNOTATIONS_DIR, str(annotation_idx) + '.npy')
             try:
                 os.remove(annotation_path)
-            except FileNotFoundError:
+            except IOError:
                 pass
         else:
             raise IndexError('idx must be less than the current number of annotations')
 
-
     def train(self, num_epochs=6):
         self.model = MultilayerPerceptron()
+        self.num_epochs = num_epochs
         if self.status.annotations_loaded:
             self.model.fit(self.X,
                            self.y,
@@ -170,25 +180,51 @@ class DecoyMNIST(Experiment):
             self.model.fit(self.X, self.y, num_epochs=num_epochs)
         self.status.trained = True
 
-    def explain(self, idx, **explanation_params):
+    def save_experiment(self):
+        filename = str(int(time.time()))
+        self.name = filename
+        self.train_accuracy, self.test_accuracy = self.score_model()
+        save_dict = self.__dict__.copy()
+        do_not_save = ['Xr', 'X', 'y', 'E', 'Xtr', 'Et']
+        for attr in do_not_save:
+            save_dict.pop(attr)
+
+        with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
+            pickle.dump(save_dict, f)
+
+    def explain(self, idx=None):
         if not self.status.trained:
             raise AttributeError(
                 'You must have trained the model to be able to generate explanations.')
 
+        if idx is None:
+            idx = random.randint(0, len(self.Xt))
+
         image = self.Xt[idx]
-        predicted_label = self.model.predict(np.array([image]))
+        image = np.reshape(image, (28, 28))
+        predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
+
+        def preprocessor(inputs):
+            inputs = inputs[:, :, :, 0]
+            return np.reshape(inputs, (-1, 784))
+
+        self.model.input_preprocessor = preprocessor
 
         explainer = lime_image.LimeImageExplainer()
         explanation = explainer.explain_instance(image,
-                                                 self.model,
-                                                 top_labels=5,
-                                                 hide_color=0,
-                                                 num_samples=1000)
+                                                 self.model.predict_proba,
+                                                 top_labels=10,
+                                                 num_samples=3000)
         temp, mask = explanation.get_image_and_mask(
-            predicted_label, positive_only=True, num_features=5, hide_rest=True)
+            predicted_label, positive_only=False, hide_rest=False)
         masked_image = mark_boundaries(temp / 2 + 0.5, mask)
-        print(masked_image)
-        return masked_image
+        image = Image.fromarray(masked_image.astype('uint8'))
+        masked_image_binary = self._convert_image_to_base64(image)
+        return {
+            'data': 'data:image/jpg;base64,' + masked_image_binary,
+            'ground_truth': int(self.yt[idx]),
+            'predicted': predicted_label
+        }
 
     def score_model(self):
         return (
@@ -306,10 +342,10 @@ if __name__ == '__main__':
     decoy_mnist.generate_dataset()
     decoy_mnist.load_annotations(weight=10, per_annotation=True)
     decoy_mnist.train(num_epochs=1)
+    decoy_mnist.save_experiment()
     print(decoy_mnist.score_model())
-    print(decoy_mnist.explain(0))
 
-    print('Training without annotations')
-    decoy_mnist.unload_annotations()
-    decoy_mnist.train(num_epochs=2)
-    print(decoy_mnist.score_model())
+    # print('Training without annotations')
+    # decoy_mnist.unload_annotations()
+    # decoy_mnist.train(num_epochs=2)
+    # print(decoy_mnist.score_model())
