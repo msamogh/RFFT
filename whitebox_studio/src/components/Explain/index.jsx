@@ -36,7 +36,7 @@ class Explain extends React.Component {
     return (
       <div className="Explain">
         <button onClick={this.getPreviousImage}>previous</button>
-        <img src={this.state.uri} height={280} width={280} />
+        <img alt="" src={this.state.uri} height={280} width={280} />
         <button onClick={this.getNextImage}>next</button>
       </div>
     );
