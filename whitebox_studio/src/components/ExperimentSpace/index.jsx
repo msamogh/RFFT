@@ -32,8 +32,8 @@ class ExperimentSpace extends React.Component {
     return (
       <div className="ExperimentSpace">
         <SideBar onClick={this.navigateToAction}/>
-        <WorkSpace state={state} attributes={attributes}/>
-        <AttributesBar state={state} attributes={attributes} onAttributesChange={this.onAttributesChange}/>
+        <WorkSpace state={state} attributes={attributes} experiment={this.props.experiment}/>
+        <AttributesBar state={state} attributes={attributes} onAttributesChange={this.onAttributesChange} experiment={this.props.experiment}/>
       </div>
     );
   }

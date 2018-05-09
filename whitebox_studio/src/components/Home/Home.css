@@ -31,11 +31,30 @@
   margin-bottom: 50px;
 }
 
+.Home-PreExperimentCard {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  margin: 0 15px;
+  justify-content: space-between;
+  /* border: 2px solid rgb(7, 150, 207); */
+  height: 30%;
+  width: 300px;
+  border-radius: 2px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  margin-bottom: 50px;
+}
+
 
 .Home-ExperimentCard-params {
   display: flex;
   flex-direction: row;
   flex-flow: row wrap;
+}
+
+.Home-ExperimentCard-paramField {
+  margin-right: 10px;
 }
 
 .Home-ExperimentCard-button {

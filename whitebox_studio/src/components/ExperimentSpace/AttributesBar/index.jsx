@@ -1,7 +1,20 @@
 import React from 'react';
+import constants from '../../constants';
 import './AttributesBar.css';
 
 class AttributesBar extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      trainAtrributes: {
+        useAnnotations: false,
+        numberOfAnnotations: 0,
+        numberOfEpochs: 0,
+        hypothesisWeight: 0,
+      },
+    };
+  }
 
   annotatorColorChange = (event) => {
     const atrributes = {
@@ -29,24 +42,42 @@ class AttributesBar extends React.Component {
   )
 
   train = () => {
-    //TODO call api.
+    const API = `${constants.API}/train/${this.props.experiment.id}>`;
+    const trainAtrributes = {
+      num_annotations: this.state.trainAtrributes.useAnnotations ? this.state.trainAtrributes.numberOfAnnotations : 0,
+      num_epochs: this.state.trainAtrributes.numberOfEpochs,
+      hypothesis_weight: this.state.trainAtrributes.hypothesisWeight,
+    }
+    fetch(API, {method: 'POST', body: JSON.stringify(trainAtrributes)})
+      .then(response => response.json())
+      .then(data => {console.log(data)});
+    console.log(trainAtrributes);
+
+  }
+
+  trainParamChange = (param) => (event) => {
+    this.setState({trainAtrributes: {...this.state.trainAtrributes, [param]: event.target.value}});
+  }
+
+  handleClick = (cb) => {
+    this.setState({trainAtrributes: {...this.state.trainAtrributes, useAnnotations: cb.checked}});
   }
 
   trainAttributes = () => (
     <div className="train-atrributes">
       <div>
         <label htmlFor="useAnnotations">Use Annotations while training</label><br />
-        <input type="checkbox" id="useAnnotations"/>
+        <input type="checkbox" id="useAnnotations" onClick={this.handleClick}/>
       </div>
 
       <label htmlFor="numberOfAnnotations">Number of Annotations to use</label>
-      <input type="number" id="numberOfAnnotations" max="30"/>
+      <input type="number" id="numberOfAnnotations" max="30" onChange={this.trainParamChange('numberOfAnnotations')}/>
       
       <label htmlFor="numberOfEpochs">Number of Epochs</label>
-      <input type="number" id="numberOfEpochs" />
+      <input type="number" id="numberOfEpochs" onChange={this.trainParamChange('numberOfEpochs')}/>
 
-      <label htmlFor="numberOfEpochs">Hypothesis weight</label>
-      <input type="number" id="hypothesisWeight" min="0" max="100000" step="10"/>
+      <label htmlFor="hypothesisWeight">Hypothesis weight</label>
+      <input type="number" id="hypothesisWeight" min="0" max="100000" step="10" onChange={this.trainParamChange('hypothesisWeight')}/>
 
       <button onClick={this.train}>TRAIN</button>
     </div>

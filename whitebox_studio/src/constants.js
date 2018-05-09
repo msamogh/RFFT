@@ -3,5 +3,5 @@
 // }
 
 export default {
-  API: 'http://3102be75.ngrok.io/api/v1'
+  API: 'http://2bc76fdd.ngrok.io/api/v1'
 }
