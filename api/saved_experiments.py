@@ -14,7 +14,7 @@ class SavedExperiments(Resource):
 
         for experiment in saved_experiments:
             if experiment.hypothesis.per_annotation:
-                weight = experiment.hypothesis.weight / experiment.hypothesis.num_annotations
+                weight = experiment.hypothesis.weight / max(experiment.hypothesis.num_annotations, 1)
             else:
                 weight = experiment.hypothesis.weight
             saved_experiments_result.append({

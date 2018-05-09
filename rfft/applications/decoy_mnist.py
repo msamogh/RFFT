@@ -194,6 +194,7 @@ class DecoyMNIST(Experiment):
 
         with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
             pickle.dump(save_dict, f)
+        return filename
 
     def explanation_grid(explanations, imgshape, length=None, gridshape=None, pad=0.1, **kwargs):
         if len(imgshape) == 2:
@@ -234,7 +235,7 @@ class DecoyMNIST(Experiment):
 
         predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
 
-        explanation_grid(self.model.grad_explain(np.array([self.Xt[0]])), (28, 28))
+        explanation_grid(self.model.grad_explain(np.array([self.Xt[idx]])), (28, 28))
 
         # Get explanation image
         filename = 'temp{}'.format(int(time.time()))
