@@ -128,7 +128,7 @@ class ExperimentList extends React.Component {
 
   render() {
     return (
-      <div className="Home">
+      <div>
       <div className="experimentList">
         {this.renderCards()}
       </div>

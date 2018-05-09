@@ -1,5 +1,5 @@
 import React from 'react';
-import constants from '../../constants';
+import constants from '../../../constants';
 import './AttributesBar.css';
 
 class AttributesBar extends React.Component {
@@ -42,7 +42,7 @@ class AttributesBar extends React.Component {
   )
 
   train = () => {
-    const API = `${constants.API}/train/${this.props.experiment.id}>`;
+    const API = `${constants.API}/train/${this.props.experiment.id}`;
     const trainAtrributes = {
       num_annotations: this.state.trainAtrributes.useAnnotations ? this.state.trainAtrributes.numberOfAnnotations : 0,
       num_epochs: this.state.trainAtrributes.numberOfEpochs,
@@ -59,15 +59,15 @@ class AttributesBar extends React.Component {
     this.setState({trainAtrributes: {...this.state.trainAtrributes, [param]: event.target.value}});
   }
 
-  handleClick = (cb) => {
-    this.setState({trainAtrributes: {...this.state.trainAtrributes, useAnnotations: cb.checked}});
+  handleClick = (event) => {
+    this.setState({trainAtrributes: {...this.state.trainAtrributes, useAnnotations: event.target.checked}});
   }
 
   trainAttributes = () => (
     <div className="train-atrributes">
       <div>
         <label htmlFor="useAnnotations">Use Annotations while training</label><br />
-        <input type="checkbox" id="useAnnotations" onClick={this.handleClick}/>
+        <input type="checkbox" id="useAnnotations" onChange={this.handleClick}/>
       </div>
 
       <label htmlFor="numberOfAnnotations">Number of Annotations to use</label>
