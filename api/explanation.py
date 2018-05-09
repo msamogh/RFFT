@@ -1,16 +1,17 @@
-import json
+from flask import jsonify
+from flask_restful import Resource
 
-from flask_restful import request, Resource
-from experiment.experiment_cache import ExperimentCache
+from .experiment.experiment_cache import get_experiment_class_from_name
 
 
 class Explanation(Resource):
 
-    def post(self, experiment_name, sample_idx):
-        req_json = json.loads(request.data.decode('utf-8'))
+    def get(self, experiment_name, saved_experiment_id):
         try:
-            experiment = ExperimentCache().get_experiment(experiment_name)
-            experiment.explain(sample_idx, **req_json)
+            experiment_class = get_experiment_class_from_name(experiment_name)
+            experiment = experiment_class.load_experiment(saved_experiment_id, True)
+            masked_image = experiment.explain()
+            return jsonify(masked_image)
         except KeyError as ke:
             return str(ke), 400
         except Exception as ex:
