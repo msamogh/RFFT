@@ -1,11 +1,8 @@
 .Home {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
-  vertical-align: center;
-  height: 100%;
+}
+
+body {
   background: #e5e5e5;
 }
 
@@ -14,6 +11,21 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.container {
+  width: 100%;
+}
+
+.preTrainedExperimentList {
+  display: inline-block;
+  text-align: left;
+  max-width: 800px;
+  margin: auto auto;
+}
+
+.preTrainedExperimentListWrapper {
+  text-align: center;
 }
 
 .Home-ExperimentCard {
@@ -36,14 +48,14 @@
   display: flex;
   flex-direction: column;
   margin: 0 15px;
+  margin-bottom: 20px;
   justify-content: space-between;
   /* border: 2px solid rgb(7, 150, 207); */
-  height: 30%;
-  width: 300px;
+  display: inline-block;
+  width: 350px;
   border-radius: 2px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-  margin-bottom: 50px;
 }
 
 
@@ -54,20 +66,26 @@
 }
 
 .Home-ExperimentCard-paramField {
-  margin-right: 10px;
+  width: 50%;
 }
 
 .Home-ExperimentCard-button {
   padding: 15px;
   cursor: pointer;
-  box-shadow: 3px 1px 3px rgba(0,0,0,0.12), 3px 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.Home-PreExperimentCard-button {
+  padding: 15px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.12), 1px 1px 1px rgba(0,0,0,0.24);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 
 .Home-ExperimentCard-name {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin-bottom: 5px;
-
 }
 
 .Home-ExperimentCard-desc {
@@ -77,7 +95,20 @@
   font-size: 14px;
   text-align: justify;
   color: #333;
-  font-weight: normal;
+  font-weight: normal;  
+}
+
+.Home-PreExperimentCard-desc {
+  margin-top: 15px;
+  font-size: 15px;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  font-weight: bold;
+}
+
+.Home-PreExperimentCard-desc-value {
+  font-size: 12px;
+  margin-top: 2px;
 }
 
 .Home-ExperimentCard-domain {
@@ -106,7 +137,7 @@
 }
 
 .Home-ExperimentCard:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 14px rgba(0,0,0,0.25), 0 5px 5px rgba(0,0,0,0.22);
 }
 
 .Home-ExperimentCard-info {
@@ -119,8 +150,24 @@
 
 .Home-ExperimentCard-button {
   border: 0px;
-  background-color: rgb(7, 150, 207);
+  background-color: rgb(80, 171, 1);
   color: white;
   font-size: 20px;
   min-height: 30px;
+}
+
+.Home-PreExperimentCard-button {
+  border: 0px;
+  background-color: rgb(7, 150, 207);
+  color: white;
+  float: right;
+  font-size: 20px;
+  min-height: 30px;
+}
+
+.rowTitle {
+  text-align: center;
+  font-size: 19pt;
+  margin: 30px auto;
+  font-weight: normal;
 }

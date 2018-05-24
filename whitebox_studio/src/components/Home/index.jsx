@@ -22,8 +22,8 @@ class ExperimentCard extends React.Component {
     return (
       <div className="Home-ExperimentCard">
         <div className="Home-ExperimentCard-info">
-          <h1 className="Home-ExperimentCard-name">{name}</h1>
-          <p className="Home-ExperimentCard-desc">{description}</p>
+          <h2 className="Home-ExperimentCard-name">{name}</h2>
+          <div className="Home-ExperimentCard-desc">{description}</div>
           <h2 className="Home-ExperimentCard-domain">{this.getDomainName(domain)}</h2>
         </div>
         <button className="Home-ExperimentCard-button" onClick={this.props.goToWorkspace}>{started ? 'Resume experiment' : 'Start experiment'}</button>
@@ -41,36 +41,30 @@ render() {
     return (
       <div className="Home-PreExperimentCard">
         <div className="Home-ExperimentCard-info">
-          <h1 className="Home-ExperimentCard-name">{name}</h1>
-
           <div className="Home-ExperimentCard-params">
             <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`num of epochs`}</p>
-            <p className="Home-ExperimentCard-desc">{`${num_epochs}`}</p>
+            <div className="Home-PreExperimentCard-desc">{`Number of epochs`}</div>
+            <div className="Home-PreExperimentCard-desc-value">{`${num_epochs}`}</div>
             </div>
             <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`annotations used`}</p>
-            <p className="Home-ExperimentCard-desc">{` ${per_annotation}`}</p>
+            <div className="Home-PreExperimentCard-desc">{`Annotations`}</div>
+            <div className="Home-PreExperimentCard-desc-value">{`${n_annotations}`}</div>
             </div>
             <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`number of annotations`}</p>
-            <p className="Home-ExperimentCard-desc">{`${n_annotations}`}</p>
+            <div className="Home-PreExperimentCard-desc">{`Hypothesis weight`}</div>
+            <div className="Home-PreExperimentCard-desc-value">{`${hypothesis_weight}`}</div>
             </div>
             <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`hypothesis weight`}</p>
-            <p className="Home-ExperimentCard-desc">{`${hypothesis_weight}`}</p>
+            <div className="Home-PreExperimentCard-desc">{`Test accuracy`}</div>
+            <div className="Home-PreExperimentCard-desc-value">{`${test_accuracy * 100}%`}</div>
             </div>
             <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`test accuracy`}</p>
-            <p className="Home-ExperimentCard-desc">{`${test_accuracy}%`}</p>
-            </div>
-            <div className="Home-ExperimentCard-paramField">
-            <p className="Home-ExperimentCard-desc">{`training accuracy`}</p>
-            <p className="Home-ExperimentCard-desc">{` ${train_accuracy}%`}</p>
+            <div className="Home-PreExperimentCard-desc">{`Training accuracy`}</div>
+            <div className="Home-PreExperimentCard-desc-value">{` ${train_accuracy * 100}%`}</div>
             </div>
           </div>
         </div>
-        <button className="Home-ExperimentCard-button" onClick={this.props.goToExplain}>Explain</button>
+        <button className="Home-PreExperimentCard-button" onClick={this.props.goToExplain}>Explain</button>
       </div>
     );
   }
@@ -86,7 +80,7 @@ class ExperimentList extends React.Component {
 
   componentDidMount = () => {
     const API = `${constants.API}/all_experiments`;
-    const API2 = `${constants.API}/saved_experiments/`;
+    const API2 = `${constants.API}/saved_experiments`;
     fetch(API)
       .then(response => response.json())
       .then(data => {
@@ -102,12 +96,12 @@ class ExperimentList extends React.Component {
       });
 
       
-        fetch(`${API2}DecoyMNIST`)
-        .then(response2 => response2.json())
-        .then(data2 => {
-          console.log(data2);
-          this.setState({ pre_trained_expereiments: data2 });
-        });
+      fetch(`${API2}/DecoyMNIST`)
+      .then(response2 => response2.json())
+      .then(data2 => {
+        console.log(data2);
+        this.setState({ pre_trained_expereiments: data2 });
+      });
   }
 
   goToWorkspace = (experiment) => () => {
@@ -128,13 +122,20 @@ class ExperimentList extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="container">
+
+      <h4 className="rowTitle">Experiments</h4>
       <div className="experimentList">
         {this.renderCards()}
       </div>
-      <div className="experimentList">
-        {this.renderPreCards()}
+
+      <h4 className="rowTitle">Pre-trained Models</h4>
+      <div className="preTrainedExperimentListWrapper">
+        <div className="preTrainedExperimentList">
+          {this.renderPreCards()}
+        </div>
       </div>
+
       </div>
     );
   }

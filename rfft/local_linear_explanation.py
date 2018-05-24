@@ -58,7 +58,7 @@ class LocalLinearExplanation():
         maxcoef = np.abs(self.coefs).max()
         markers = [None, '+', '_']
         colors = [None, 'g', 'r']
-        cutoff = 0.1
+        cutoff = 0.5
         for y in range(l):
             for x in range(w):
                 for i, coef in enumerate(listwrap(coefs[y][x])):

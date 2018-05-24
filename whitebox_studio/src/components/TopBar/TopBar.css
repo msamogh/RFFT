@@ -4,7 +4,6 @@
   justify-content: center;
   width: 100%l;
   background-color: rgb(0, 37, 52);
-  
   padding: 10px;
 }
 
@@ -14,5 +13,5 @@
   background-color: transparent;
   color: white;
   font-size: 20px;
-  /* margin-left: 20px; */
+  cursor: pointer;
 }

@@ -9,6 +9,7 @@ except ImportError:
 import array
 import base64
 import gzip
+import json
 import os
 import pickle
 import random
@@ -47,6 +48,7 @@ ANNOTATIONS_DIR = 'tagging/decoy_mnist'
 class DecoyMNIST(Experiment):
 
     MODELS_DIR = 'models/decoy_mnist'
+    SAVED_EXPERIMENTS_CACHE_FILE = 'saved_experiments_metadata'
 
     def __init__(self):
         Experiment.__init__(self)
@@ -84,7 +86,8 @@ class DecoyMNIST(Experiment):
             return Xtr[idx]
 
     def load_annotations(self, **hypothesis_params):
-        num_annotations = hypothesis_params['num_annotations']
+        num_annotations = hypothesis_params.pop('num_annotations', None)
+        hypothesis_weight = hypothesis_params.pop('hypothesis_weight', 0)
         annotation_files = [os.path.join(ANNOTATIONS_DIR, x)
                             for x in os.listdir(ANNOTATIONS_DIR)
                             if x.endswith('.npy')][:num_annotations]
@@ -102,7 +105,7 @@ class DecoyMNIST(Experiment):
 
         self.affected_indices = affected_indices
         self.hypothesis = Hypothesis(
-            A, weight=hypothesis_params['hypothesis_weight'])
+            A, weight=hypothesis_weight)
         self.status.annotations_loaded = True
 
     def unload_annotations(self):
@@ -183,6 +186,22 @@ class DecoyMNIST(Experiment):
             self.model.fit(self.X, self.y, num_epochs=num_epochs)
         self.status.trained = True
 
+    @property
+    def metadata(self):
+        if self.hypothesis.per_annotation:
+            weight = self.hypothesis.weight / max(self.hypothesis.num_annotations, 1)
+        else:
+            weight = self.hypothesis.weight
+        return {
+            'name': self.name,
+            'hypothesis_weight': weight,
+            'per_annotation': self.hypothesis.per_annotation,
+            'n_annotations': self.hypothesis.num_annotations,
+            'train_accuracy': self.train_accuracy,
+            'test_accuracy': self.test_accuracy,
+            'num_epochs': self.num_epochs
+        }
+
     def save_experiment(self):
         filename = str(int(time.time()))
         self.name = filename
@@ -194,36 +213,16 @@ class DecoyMNIST(Experiment):
 
         with open(os.path.join(DecoyMNIST.MODELS_DIR, filename), 'wb') as f:
             pickle.dump(save_dict, f)
+        with open(DecoyMNIST.SAVED_EXPERIMENTS_CACHE_FILE, 'rb') as f:
+            try:
+                saved_experiments = json.load(f)
+            except Exception:
+                saved_experiments = []
+        with open(DecoyMNIST.SAVED_EXPERIMENTS_CACHE_FILE, 'wb') as f:
+            saved_experiments.append(self.metadata)
+            json.dump(saved_experiments, f)
         return filename
 
-    def explanation_grid(explanations, imgshape, length=None, gridshape=None, pad=0.1, **kwargs):
-        if len(imgshape) == 2:
-            l, l2 = imgshape
-            assert(l == l2)
-        else:
-            l, l2, d = imgshape
-            assert(l == l2)
-            assert(d == 3)
-
-        if gridshape is None:
-            if length is None:
-                length = int(np.ceil(np.sqrt(len(explanations))))
-            gridshape = (length, length)
-        xlength, ylength = gridshape
-
-        plt.xticks([])
-        plt.yticks([])
-        for spine in plt.gca().spines.values():
-            spine.set_visible(False)
-        plt.xlim(0, l * (xlength * (1 + pad)))
-        plt.ylim(0, l * (ylength * (1 + pad)))
-        n = 0
-        for i in range(xlength):
-            for j in range(ylength):
-                print(type(explanations[n]))
-                explanations[n].imshow(
-                    imgshape, xoff=i * (1 + pad), yoff=(ylength - j - 1) * (1 + pad), **kwargs)
-                n += 1
 
     def explain(self, idx=None):
         if not self.status.trained:
@@ -235,7 +234,7 @@ class DecoyMNIST(Experiment):
 
         predicted_label = self.model.predict(np.array([self.Xt[idx]]))[0]
 
-        explanation_grid(self.model.grad_explain(np.array([self.Xt[idx]])), (28, 28))
+        explanation_grid(self.model.grad_explain(np.array([self.Xt[idx]])), (28, 28), size=50)
 
         # Get explanation image
         filename = 'temp{}'.format(int(time.time()))
@@ -396,12 +395,13 @@ class DecoyMNIST(Experiment):
 
 if __name__ == '__main__':
     print('Training with annotations')
-    # decoy_mnist = DecoyMNIST()
-    # decoy_mnist.generate_dataset()
-    # decoy_mnist.load_annotations(weight=10, per_annotation=True)
-    decoy_mnist = DecoyMNIST.load_experiment('1525843725', prepend_path=True)
-    # decoy_mnist.train(num_epochs=1)
-    decoy_mnist.explain()
+    decoy_mnist = DecoyMNIST()
+    decoy_mnist.generate_dataset()
+    decoy_mnist.load_annotations(weight=10, per_annotation=True)
+    # decoy_mnist = DecoyMNIST.load_experiment('1525843725', prepend_path=True)
+    decoy_mnist.train(num_epochs=1)
+    decoy_mnist.save_experiment()
+    # decoy_mnist.explain()
     # print(decoy_mnist.explain())
 
     # print('Training without annotations')
