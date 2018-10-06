@@ -38,8 +38,8 @@ render() {
     const {
       name, per_annotation, num_epochs, n_annotations, hypothesis_weight, test_accuracy, train_accuracy,
     } = this.props.experiment;
-    per_annotation = true;
-    name = null;
+    console.log(per_annotation)
+    console.log(name)
     return (
       <div className="Home-PreExperimentCard">
         <div className="Home-ExperimentCard-info">
