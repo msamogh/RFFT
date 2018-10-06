@@ -19,6 +19,7 @@ class ExperimentCard extends React.Component {
     const {
       name, description, domain, started,
     } = this.props.experiment;
+    name;
     return (
       <div className="Home-ExperimentCard">
         <div className="Home-ExperimentCard-info">
@@ -38,6 +39,8 @@ render() {
     const {
       name, per_annotation, num_epochs, n_annotations, hypothesis_weight, test_accuracy, train_accuracy,
     } = this.props.experiment;
+    per_annotation;
+    name;
     return (
       <div className="Home-PreExperimentCard">
         <div className="Home-ExperimentCard-info">
